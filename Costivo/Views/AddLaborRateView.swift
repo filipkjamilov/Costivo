@@ -18,40 +18,40 @@ struct AddLaborRateView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("Labor Details") {
-                    TextField("Name (e.g., Installation, Painting)", text: $name)
+                Section(L(.laborDetails)) {
+                    TextField(L(.laborNamePlaceholder), text: $name)
                     
                     HStack {
                         Text(currency)
                             .foregroundStyle(.secondary)
-                        TextField("Price", text: $priceText)
+                        TextField(L(.price), text: $priceText)
                             .keyboardType(.decimalPad)
                     }
                 }
                 
-                Section("Pricing Model") {
-                    Picker("Model", selection: $selectedPricingModel) {
+                Section(L(.pricingModel)) {
+                    Picker(L(.model), selection: $selectedPricingModel) {
                         ForEach(PricingModel.allCases, id: \.self) { model in
                             Text(model.localizedName).tag(model)
                         }
                     }
                     
                     if selectedPricingModel.requiresUnit {
-                        TextField("Unit (e.g., m², piece)", text: $unit)
+                        TextField(L(.unitPlaceholder), text: $unit)
                     }
                 }
             }
-            .navigationTitle("Add Labor Rate")
+            .navigationTitle(L(.addLaborRate))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
+                    Button(L(.cancel)) {
                         dismiss()
                     }
                 }
                 
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Add") {
+                    Button(L(.add)) {
                         saveLaborRate()
                     }
                     .disabled(!isValid)

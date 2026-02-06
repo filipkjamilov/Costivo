@@ -20,13 +20,13 @@ struct EditMaterialView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("Material Details") {
-                    TextField("Name", text: $material.name)
+                Section(L(.materialDetails)) {
+                    TextField(L(.name), text: $material.name)
                     
                     HStack {
                         Text(currency)
                             .foregroundStyle(.secondary)
-                        TextField("Price per Unit", text: $priceText)
+                        TextField(L(.pricePerUnit), text: $priceText)
                             .keyboardType(.decimalPad)
                             .onChange(of: priceText) { _, newValue in
                                 if let price = Double(newValue) {
@@ -36,19 +36,19 @@ struct EditMaterialView: View {
                     }
                 }
                 
-                Section("Unit") {
-                    Picker("Unit", selection: $material.unit) {
+                Section(L(.unit)) {
+                    Picker(L(.unit), selection: $material.unit) {
                         ForEach(Unit.allUnits, id: \.self) { unit in
                             Text(Unit.localizedUnitKey(unit)).tag(unit)
                         }
                     }
                 }
             }
-            .navigationTitle("Edit Material")
+            .navigationTitle(L(.editMaterial))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") {
+                    Button(L(.done)) {
                         dismiss()
                     }
                     .disabled(material.name.isEmpty || Double(priceText) == nil)

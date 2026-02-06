@@ -22,13 +22,13 @@ struct EditLaborRateView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("Labor Details") {
-                    TextField("Name", text: $laborRate.name)
+                Section(L(.laborDetails)) {
+                    TextField(L(.name), text: $laborRate.name)
                     
                     HStack {
                         Text(currency)
                             .foregroundStyle(.secondary)
-                        TextField("Price", text: $priceText)
+                        TextField(L(.price), text: $priceText)
                             .keyboardType(.decimalPad)
                             .onChange(of: priceText) { _, newValue in
                                 if let price = Double(newValue) {
@@ -38,26 +38,26 @@ struct EditLaborRateView: View {
                     }
                 }
                 
-                Section("Pricing Model") {
-                    Picker("Model", selection: $laborRate.pricingModel) {
+                Section(L(.pricingModel)) {
+                    Picker(L(.model), selection: $laborRate.pricingModel) {
                         ForEach(PricingModel.allCases, id: \.self) { model in
                             Text(model.localizedName).tag(model)
                         }
                     }
                     
                     if laborRate.pricingModel.requiresUnit {
-                        TextField("Unit (e.g., m², piece)", text: $unit)
+                        TextField(L(.unitPlaceholder), text: $unit)
                             .onChange(of: unit) { _, newValue in
                                 laborRate.unit = newValue
                             }
                     }
                 }
             }
-            .navigationTitle("Edit Labor Rate")
+            .navigationTitle(L(.editLaborRate))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") {
+                    Button(L(.done)) {
                         dismiss()
                     }
                     .disabled(!isValid)

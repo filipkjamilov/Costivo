@@ -30,11 +30,11 @@ struct MaterialPickerView: View {
                     }
                 }
             }
-            .navigationTitle("Select Material")
+            .navigationTitle(L(.selectMaterial))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
+                    Button(L(.cancel)) {
                         dismiss()
                     }
                 }
@@ -42,9 +42,9 @@ struct MaterialPickerView: View {
             .overlay {
                 if materials.isEmpty {
                     ContentUnavailableView(
-                        "No Materials Available",
+                        L(.noMaterialsAvailable),
                         systemImage: "cube.box",
-                        description: Text("Add materials first in the Materials tab")
+                        description: Text(L(.addMaterialsFirst))
                     )
                 }
             }

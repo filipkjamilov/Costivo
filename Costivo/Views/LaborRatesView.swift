@@ -19,7 +19,7 @@ struct LaborRatesView: View {
                 }
                 .onDelete(perform: deleteLaborRates)
             }
-            .navigationTitle("Labor Rates")
+            .navigationTitle(L(.laborRates))
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
@@ -38,9 +38,9 @@ struct LaborRatesView: View {
             .overlay {
                 if laborRates.isEmpty {
                     ContentUnavailableView(
-                        "No Labor Rates",
+                        L(.noLaborRates),
                         systemImage: "wrench.and.screwdriver",
-                        description: Text("Add your first labor rate to get started")
+                        description: Text(L(.addFirstLaborRate))
                     )
                 }
             }

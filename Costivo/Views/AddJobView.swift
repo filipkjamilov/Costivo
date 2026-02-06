@@ -21,8 +21,8 @@ struct AddJobView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("Client") {
-                    TextField("Client Name", text: $clientName)
+                Section(L(.client)) {
+                    TextField(L(.clientName), text: $clientName)
                 }
                 
                 Section {
@@ -38,7 +38,7 @@ struct AddJobView: View {
                             
                             Spacer()
                             
-                            TextField("Qty", value: $material.quantity, format: .number)
+                            TextField(L(.quantity), value: $material.quantity, format: .number)
                                 .keyboardType(.decimalPad)
                                 .multilineTextAlignment(.trailing)
                                 .frame(width: 60)
@@ -55,10 +55,10 @@ struct AddJobView: View {
                     Button {
                         showingMaterialPicker = true
                     } label: {
-                        Label("Add Material", systemImage: "plus.circle")
+                        Label(L(.addMaterialButton), systemImage: "plus.circle")
                     }
                 } header: {
-                    Text("Materials")
+                    Text(L(.materialsSection))
                 }
                 
                 Section {
@@ -74,7 +74,7 @@ struct AddJobView: View {
                             
                             Spacer()
                             
-                            TextField("Qty", value: $labor.quantity, format: .number)
+                            TextField(L(.quantity), value: $labor.quantity, format: .number)
                                 .keyboardType(.decimalPad)
                                 .multilineTextAlignment(.trailing)
                                 .frame(width: 60)
@@ -91,15 +91,15 @@ struct AddJobView: View {
                     Button {
                         showingLaborPicker = true
                     } label: {
-                        Label("Add Labor", systemImage: "plus.circle")
+                        Label(L(.addLabor), systemImage: "plus.circle")
                     }
                 } header: {
-                    Text("Labor")
+                    Text(L(.laborSection))
                 }
                 
                 Section {
                     HStack {
-                        Text("Total")
+                        Text(L(.total))
                             .font(.headline)
                         Spacer()
                         Text("\(currency)\(totalCost, specifier: "%.2f")")
@@ -108,17 +108,17 @@ struct AddJobView: View {
                     }
                 }
             }
-            .navigationTitle("New Job")
+            .navigationTitle(L(.newJob))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
+                    Button(L(.cancel)) {
                         dismiss()
                     }
                 }
                 
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
+                    Button(L(.save)) {
                         saveJob()
                     }
                     .disabled(clientName.isEmpty)
@@ -165,11 +165,11 @@ struct AddJobView: View {
             let unit: String
             switch selected.laborRate.pricingModel {
             case .hourly:
-                unit = "hour"
+                unit = L(.hour)
             case .fixed:
-                unit = "job"
+                unit = L(.job)
             case .perUnit:
-                unit = selected.laborRate.unit ?? "unit"
+                unit = selected.laborRate.unit ?? L(.unitLabel)
             }
             
             let jobLabor = JobLabor(
@@ -201,11 +201,11 @@ struct SelectedLabor: Identifiable {
     var unit: String {
         switch laborRate.pricingModel {
         case .hourly:
-            return "hour"
+            return L(.hour)
         case .fixed:
-            return "job"
+            return L(.job)
         case .perUnit:
-            return laborRate.unit ?? "unit"
+            return laborRate.unit ?? L(.unitLabel)
         }
     }
 }

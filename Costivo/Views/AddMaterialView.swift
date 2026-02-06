@@ -22,44 +22,44 @@ struct AddMaterialView: View {
                     Button {
                         showingPredefined = true
                     } label: {
-                        Label("Choose from Common Materials", systemImage: "list.bullet")
+                        Label(L(.chooseFromCommon), systemImage: "list.bullet")
                     }
                 } header: {
-                    Text("Quick Add")
+                    Text(L(.quickAdd))
                 } footer: {
-                    Text("Select from common construction materials with preset units")
+                    Text(L(.selectFromCommonMaterials))
                 }
                 
-                Section("Material Details") {
-                    TextField("Name (e.g., Concrete, Tiles)", text: $name)
+                Section(L(.materialDetails)) {
+                    TextField(L(.materialNamePlaceholder), text: $name)
                     
                     HStack {
                         Text(currency)
                             .foregroundStyle(.secondary)
-                        TextField("Price per Unit", text: $pricePerUnit)
+                        TextField(L(.pricePerUnit), text: $pricePerUnit)
                             .keyboardType(.decimalPad)
                     }
                 }
                 
-                Section("Unit") {
-                    Picker("Unit", selection: $selectedUnit) {
+                Section(L(.unit)) {
+                    Picker(L(.unit), selection: $selectedUnit) {
                         ForEach(Unit.allUnits, id: \.self) { unit in
                             Text(Unit.localizedUnitKey(unit)).tag(unit)
                         }
                     }
                 }
             }
-            .navigationTitle("Add Material")
+            .navigationTitle(L(.addMaterialButton))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
+                    Button(L(.cancel)) {
                         dismiss()
                     }
                 }
                 
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Add") {
+                    Button(L(.add)) {
                         saveMaterial()
                     }
                     .disabled(!isValid)

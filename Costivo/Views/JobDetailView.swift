@@ -28,8 +28,8 @@ struct JobDetailView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("Client") {
-                    TextField("Client Name", text: $job.clientName)
+                Section(L(.client)) {
+                    TextField(L(.clientName), text: $job.clientName)
                 }
                 
                 Section {
@@ -45,7 +45,7 @@ struct JobDetailView: View {
                             
                             Spacer()
                             
-                            TextField("Qty", value: $material.quantity, format: .number)
+                            TextField(L(.quantity), value: $material.quantity, format: .number)
                                 .keyboardType(.decimalPad)
                                 .multilineTextAlignment(.trailing)
                                 .frame(width: 60)
@@ -71,13 +71,13 @@ struct JobDetailView: View {
                     Button {
                         showingMaterialPicker = true
                     } label: {
-                        Label("Add Material", systemImage: "plus.circle")
+                        Label(L(.addMaterialButton), systemImage: "plus.circle")
                     }
                 } header: {
-                    Text("Materials")
+                    Text(L(.materialsSection))
                 } footer: {
                     let materialsTotal = job.materialEntries.reduce(0) { $0 + $1.totalPrice }
-                    Text("Materials Total: \(currency)\(materialsTotal, specifier: "%.2f")")
+                    Text("\(L(.materialsTotal)) \(currency)\(materialsTotal, specifier: "%.2f")")
                 }
                 
                 Section {
@@ -93,7 +93,7 @@ struct JobDetailView: View {
                             
                             Spacer()
                             
-                            TextField("Qty", value: $labor.quantity, format: .number)
+                            TextField(L(.quantity), value: $labor.quantity, format: .number)
                                 .keyboardType(.decimalPad)
                                 .multilineTextAlignment(.trailing)
                                 .frame(width: 60)
@@ -119,18 +119,18 @@ struct JobDetailView: View {
                     Button {
                         showingLaborPicker = true
                     } label: {
-                        Label("Add Labor", systemImage: "plus.circle")
+                        Label(L(.addLabor), systemImage: "plus.circle")
                     }
                 } header: {
-                    Text("Labor")
+                    Text(L(.laborSection))
                 } footer: {
                     let laborTotal = job.laborEntries.reduce(0) { $0 + $1.totalPrice }
-                    Text("Labor Total: \(currency)\(laborTotal, specifier: "%.2f")")
+                    Text("\(L(.laborTotal)) \(currency)\(laborTotal, specifier: "%.2f")")
                 }
                 
                 Section {
                     HStack {
-                        Text("Total Cost")
+                        Text(L(.totalCostSection))
                             .font(.headline)
                         Spacer()
                         Text("\(currency)\(job.totalCost, specifier: "%.2f")")
@@ -139,19 +139,19 @@ struct JobDetailView: View {
                     }
                 }
             }
-            .navigationTitle("Job Details")
+            .navigationTitle(L(.jobDetails))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button {
                         showingShareSheet = true
                     } label: {
-                        Label("Share", systemImage: "square.and.arrow.up")
+                        Label(L(.share), systemImage: "square.and.arrow.up")
                     }
                 }
                 
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") {
+                    Button(L(.done)) {
                         dismiss()
                     }
                 }
@@ -176,11 +176,11 @@ struct JobDetailView: View {
                     let unit: String
                     switch labor.pricingModel {
                     case .hourly:
-                        unit = "hour"
+                        unit = L(.hour)
                     case .fixed:
-                        unit = "job"
+                        unit = L(.job)
                     case .perUnit:
-                        unit = labor.unit ?? "unit"
+                        unit = labor.unit ?? L(.unitLabel)
                     }
                     
                     let jobLabor = JobLabor(

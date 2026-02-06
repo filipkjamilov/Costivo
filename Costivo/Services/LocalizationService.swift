@@ -27,16 +27,73 @@ enum LocalizationKey: String, CaseIterable {
     // MARK: - Settings
     case support = "Support"
     case sendFeedback = "Send Feedback"
+    case preferences = "Preferences"
+    case currency = "Currency"
+    case selectPreferredCurrency = "Select your preferred currency for displaying prices"
+    case laborRates = "Labor Rates"
+    case manageLaborPricing = "Manage your labor pricing for estimates"
+    case shareFeedbackPrompt = "Share what you like, report issues, or suggest new features"
+    case addLaborRate = "Add Labor Rate"
+    case noLaborRates = "No Labor Rates"
+    case addFirstLaborRate = "Add your first labor rate to get started"
     
     // MARK: - Materials
     case noMaterials = "No materials yet"
-    case addMaterialToStart = "Add Material"
+    case addMaterialButton = "Add Material"
+    case addLabor = "Add Labor"
+    case materialsSection = "Materials"
+    case laborSection = "Labor"
+    case totalCostSection = "Total Cost"
+    case commonMaterials = "Common Materials"
+    case cancel = "Cancel"
     
     // MARK: - Jobs
     case jobs = "Jobs"
     case noJobs = "No Jobs"
     case createFirstJob = "Create your first job estimate"
     case searchByClientName = "Search by client name"
+    case jobDetails = "Job Details"
+    case clientName = "Client Name"
+    case quantity = "Qty"
+    case newJob = "New Job"
+    case save = "Save"
+    case add = "Add"
+    
+    // MARK: - Materials View
+    case materialsTitle = "Materials Title"
+    case noMaterialsYet = "No Materials"
+    case addFirstMaterial = "Add your first material to get started"
+    case quickAdd = "Quick Add"
+    case chooseFromCommon = "Choose from Common Materials"
+    case selectFromCommonMaterials = "Select from common construction materials with preset units"
+    case materialDetails = "Material Details"
+    case materialNamePlaceholder = "Name (e.g., Concrete, Tiles)"
+    case pricePerUnit = "Price per Unit"
+    case unit = "Unit"
+    
+    // MARK: - Labor
+    case hour = "hour"
+    case job = "job"
+    case unitLabel = "unit"
+    
+    // MARK: - Picker Views
+    case selectMaterial = "Select Material"
+    case selectLabor = "Select Labor"
+    case noMaterialsAvailable = "No Materials Available"
+    case noLaborRatesAvailable = "No Labor Rates Available"
+    case addMaterialsFirst = "Add materials first in the Materials tab"
+    case addLaborRatesFirst = "Add labor rates first in the Labor tab"
+    
+    // MARK: - Edit Views
+    case editMaterial = "Edit Material"
+    case editLaborRate = "Edit Labor Rate"
+    case name = "Name"
+    case price = "Price"
+    case laborDetails = "Labor Details"
+    case laborNamePlaceholder = "Name (e.g., Installation, Painting)"
+    case pricingModel = "Pricing Model"
+    case model = "Model"
+    case unitPlaceholder = "Unit (e.g., m², piece)"
 }
 
 // MARK: - Localization Protocol

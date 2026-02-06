@@ -43,11 +43,11 @@ struct PredefinedMaterialsView: View {
                     }
                 }
             }
-            .navigationTitle("Common Materials")
+            .navigationTitle(L(.commonMaterials))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
+                    Button(L(.cancel)) {
                         dismiss()
                     }
                 }

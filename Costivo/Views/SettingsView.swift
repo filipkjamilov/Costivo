@@ -30,7 +30,7 @@ struct SettingsView: View {
         NavigationStack {
             Form {
                 Section {
-                    Picker("Currency", selection: $selectedCurrency) {
+                    Picker(L(.currency), selection: $selectedCurrency) {
                         ForEach(availableCurrencies, id: \.self) { currency in
                             Text(currency).tag(currency)
                         }
@@ -39,9 +39,9 @@ struct SettingsView: View {
                         saveSettings()
                     }
                 } header: {
-                    Text("Preferences")
+                    Text(L(.preferences))
                 } footer: {
-                    Text("Select your preferred currency for displaying prices")
+                    Text(L(.selectPreferredCurrency))
                 }
                 
                 Section {
@@ -57,12 +57,12 @@ struct SettingsView: View {
                     Button {
                         showingAddLabor = true
                     } label: {
-                        Label("Add Labor Rate", systemImage: "plus.circle")
+                        Label(L(.addLaborRate), systemImage: "plus.circle")
                     }
                 } header: {
-                    Text("Labor Rates")
+                    Text(L(.laborRates))
                 } footer: {
-                    Text("Manage your labor pricing for estimates")
+                    Text(L(.manageLaborPricing))
                 }
                 
                 Section {
@@ -71,15 +71,15 @@ struct SettingsView: View {
                             UIApplication.shared.open(url)
                         }
                     } label: {
-                        Label("Send Feedback", systemImage: "envelope.fill")
+                        Label(L(.sendFeedback), systemImage: "envelope.fill")
                     }
                 } header: {
-                    Text("Support")
+                    Text(L(.support))
                 } footer: {
-                    Text("Share what you like, report issues, or suggest new features")
+                    Text(L(.shareFeedbackPrompt))
                 }
             }
-            .navigationTitle("Settings")
+            .navigationTitle(L(.settings))
             .navigationBarTitleDisplayMode(.large)
             .onAppear {
                 if let existingSettings = settings.first {

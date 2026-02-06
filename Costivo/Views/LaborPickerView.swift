@@ -30,11 +30,11 @@ struct LaborPickerView: View {
                     }
                 }
             }
-            .navigationTitle("Select Labor")
+            .navigationTitle(L(.selectLabor))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
+                    Button(L(.cancel)) {
                         dismiss()
                     }
                 }
@@ -42,9 +42,9 @@ struct LaborPickerView: View {
             .overlay {
                 if laborRates.isEmpty {
                     ContentUnavailableView(
-                        "No Labor Rates Available",
+                        L(.noLaborRatesAvailable),
                         systemImage: "wrench.and.screwdriver",
-                        description: Text("Add labor rates first in the Labor tab")
+                        description: Text(L(.addLaborRatesFirst))
                     )
                 }
             }
@@ -56,11 +56,11 @@ struct LaborPickerView: View {
         
         switch labor.pricingModel {
         case .hourly:
-            return "\(priceStr) / hour"
+            return "\(priceStr) / \(L(.hour))"
         case .fixed:
-            return "\(priceStr) / job"
+            return "\(priceStr) / \(L(.job))"
         case .perUnit:
-            return "\(priceStr) / \(labor.unit ?? "unit")"
+            return "\(priceStr) / \(labor.unit ?? L(.unitLabel))"
         }
     }
 }

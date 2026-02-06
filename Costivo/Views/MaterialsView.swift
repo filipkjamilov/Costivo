@@ -19,7 +19,7 @@ struct MaterialsView: View {
                 }
                 .onDelete(perform: deleteMaterials)
             }
-            .navigationTitle("Materials")
+            .navigationTitle(L(.materialsTitle))
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
@@ -38,9 +38,9 @@ struct MaterialsView: View {
             .overlay {
                 if materials.isEmpty {
                     ContentUnavailableView(
-                        "No Materials",
+                        L(.noMaterialsYet),
                         systemImage: "cube.box",
-                        description: Text("Add your first material to get started")
+                        description: Text(L(.addFirstMaterial))
                     )
                 }
             }
