@@ -22,7 +22,7 @@ struct JobDetailView: View {
     }
     
     private var shareTitle: String {
-        String(format: NSLocalizedString("Cost Estimate - %@", comment: "Share title with client name"), job.clientName)
+        LocalizationService.L.costEstimateWithClient(job.clientName)
     }
     
     var body: some View {
