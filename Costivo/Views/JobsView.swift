@@ -27,9 +27,9 @@ struct JobsView: View {
                 }
                 .onDelete(perform: deleteJobs)
             }
-            .navigationTitle("Jobs")
+            .navigationTitle(L(.jobs))
             .if(jobs.count > 5) { view in
-                view.searchable(text: $searchText, prompt: "Search by client name")
+                view.searchable(text: $searchText, prompt: L(.searchByClientName))
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -49,9 +49,9 @@ struct JobsView: View {
             .overlay {
                 if jobs.isEmpty {
                     ContentUnavailableView(
-                        "No Jobs",
+                        L(.noJobs),
                         systemImage: "doc.text",
-                        description: Text("Create your first job estimate")
+                        description: Text(L(.createFirstJob))
                     )
                 }
             }

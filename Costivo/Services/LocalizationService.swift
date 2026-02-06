@@ -33,8 +33,10 @@ enum LocalizationKey: String, CaseIterable {
     case addMaterialToStart = "Add Material"
     
     // MARK: - Jobs
-    case noJobs = "No jobs yet"
+    case jobs = "Jobs"
+    case noJobs = "No Jobs"
     case createFirstJob = "Create your first job estimate"
+    case searchByClientName = "Search by client name"
 }
 
 // MARK: - Localization Protocol
