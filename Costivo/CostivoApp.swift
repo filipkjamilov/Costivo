@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct CostivoApp: App {
@@ -13,5 +14,6 @@ struct CostivoApp: App {
         WindowGroup {
             ContentView()
         }
+        .modelContainer(for: [Material.self, LaborRate.self, Job.self, JobMaterial.self, JobLabor.self, AppSettings.self])
     }
 }
