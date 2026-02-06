@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import UIKit
 
 struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
@@ -11,6 +12,19 @@ struct SettingsView: View {
     @State private var editingLabor: LaborRate?
     
     private let availableCurrencies = ["MKD", "RSD", "€"]
+    
+    private var feedbackURL: URL? {
+        var components = URLComponents(string: "https://docs.google.com/forms/d/e/1FAIpQLSeTvtrxQ3edPIvtVue15qLHlu14DGkBkw2gCr-0iLdhBVAq1w/viewform")
+        
+        components?.queryItems = [
+            URLQueryItem(name: "utm_source", value: "costivo_app"),
+            URLQueryItem(name: "utm_medium", value: "ios"),
+            URLQueryItem(name: "utm_campaign", value: "feedback"),
+            URLQueryItem(name: "utm_content", value: "iOS_\(UIDevice.current.systemVersion)_\(UIDevice.current.model)_v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0")")
+        ]
+        
+        return components?.url
+    }
     
     var body: some View {
         NavigationStack {
@@ -49,6 +63,20 @@ struct SettingsView: View {
                     Text("Labor Rates")
                 } footer: {
                     Text("Manage your labor pricing for estimates")
+                }
+                
+                Section {
+                    Button {
+                        if let url = feedbackURL {
+                            UIApplication.shared.open(url)
+                        }
+                    } label: {
+                        Label("Send Feedback", systemImage: "envelope.fill")
+                    }
+                } header: {
+                    Text("Support")
+                } footer: {
+                    Text("Share what you like, report issues, or suggest new features")
                 }
             }
             .navigationTitle("Settings")
