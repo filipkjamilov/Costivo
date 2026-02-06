@@ -6,11 +6,19 @@ struct JobsView: View {
     @Query(sort: \Job.createdDate, order: .reverse) private var jobs: [Job]
     @State private var showingAddJob = false
     @State private var selectedJob: Job?
+    @State private var searchText = ""
+    
+    private var filteredJobs: [Job] {
+        if searchText.isEmpty {
+            return jobs
+        }
+        return jobs.filter { $0.clientName.localizedCaseInsensitiveContains(searchText) }
+    }
     
     var body: some View {
         NavigationStack {
             List {
-                ForEach(jobs) { job in
+                ForEach(filteredJobs) { job in
                     JobRow(job: job)
                         .contentShape(Rectangle())
                         .onTapGesture {
@@ -20,6 +28,9 @@ struct JobsView: View {
                 .onDelete(perform: deleteJobs)
             }
             .navigationTitle("Jobs")
+            .if(jobs.count > 5) { view in
+                view.searchable(text: $searchText, prompt: "Search by client name")
+            }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
@@ -80,6 +91,16 @@ struct JobRow: View {
                 .foregroundStyle(.primary)
         }
         .padding(.vertical, 4)
+    }
+}
+
+extension View {
+    @ViewBuilder func `if`<Content: View>(_ condition: Bool, transform: (Self) -> Content) -> some View {
+        if condition {
+            transform(self)
+        } else {
+            self
+        }
     }
 }
 
