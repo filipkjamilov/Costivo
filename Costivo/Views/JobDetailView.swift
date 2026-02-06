@@ -11,9 +11,18 @@ struct JobDetailView: View {
     
     @State private var showingMaterialPicker = false
     @State private var showingLaborPicker = false
+    @State private var showingShareSheet = false
     
     private var currency: String {
         settings.first?.preferredCurrency ?? "MKD"
+    }
+    
+    private var shareText: String {
+        JobShareService.formatJobForSharing(job: job, currency: currency)
+    }
+    
+    private var shareTitle: String {
+        String(format: NSLocalizedString("Cost Estimate - %@", comment: "Share title with client name"), job.clientName)
     }
     
     var body: some View {
@@ -133,11 +142,22 @@ struct JobDetailView: View {
             .navigationTitle("Job Details")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button {
+                        showingShareSheet = true
+                    } label: {
+                        Label("Share", systemImage: "square.and.arrow.up")
+                    }
+                }
+                
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") {
                         dismiss()
                     }
                 }
+            }
+            .sheet(isPresented: $showingShareSheet) {
+                ShareSheet(items: [shareText], subject: shareTitle)
             }
             .sheet(isPresented: $showingMaterialPicker) {
                 MaterialPickerView(materials: materials) { material in
