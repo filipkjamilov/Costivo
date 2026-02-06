@@ -9,8 +9,9 @@ struct PredefinedMaterial: Identifiable {
     let unit: String
     let suggestedPrice: Double?
     
-    var localizedName: String {
-        if Locale.current.language.languageCode?.identifier == "mk" {
+    func localizedName(locale: Locale = .current) -> String {
+        let languageCode = locale.language.languageCode?.identifier ?? locale.languageCode
+        if languageCode == "mk" {
             return nameMk
         }
         return nameEn

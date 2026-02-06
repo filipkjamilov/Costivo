@@ -67,7 +67,7 @@ struct AddMaterialView: View {
             }
             .sheet(isPresented: $showingPredefined) {
                 PredefinedMaterialsView { predefined in
-                    name = predefined.localizedName
+                    name = predefined.localizedName()
                     selectedUnit = predefined.unit
                     if let suggested = predefined.suggestedPrice {
                         pricePerUnit = String(format: "%.2f", suggested)

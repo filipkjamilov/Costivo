@@ -2,6 +2,7 @@ import SwiftUI
 
 struct PredefinedMaterialsView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.locale) private var locale
     let onSelect: (PredefinedMaterial) -> Void
     
     var body: some View {
@@ -13,7 +14,7 @@ struct PredefinedMaterialsView: View {
                 } label: {
                     HStack {
                         VStack(alignment: .leading, spacing: 4) {
-                            Text(material.localizedName)
+                            Text(material.localizedName(locale: locale))
                                 .font(.headline)
                                 .foregroundStyle(.primary)
                             
