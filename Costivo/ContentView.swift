@@ -29,7 +29,27 @@ struct ContentView: View {
     }
 }
 
-#Preview {
-    ContentView()
-        .modelContainer(for: [Material.self, LaborRate.self, Job.self, JobMaterial.self, JobLabor.self, AppSettings.self])
+#Preview("English") {
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+    let container = try! ModelContainer(
+        for: Material.self, LaborRate.self, Job.self, JobMaterial.self, JobLabor.self, AppSettings.self,
+        configurations: config
+    )
+    
+    return ContentView()
+        .modelContainer(container)
+        .environment(\.locale, Locale(identifier: "en"))
 }
+
+#Preview("Macedonian") {
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+    let container = try! ModelContainer(
+        for: Material.self, LaborRate.self, Job.self, JobMaterial.self, JobLabor.self, AppSettings.self,
+        configurations: config
+    )
+    
+    return ContentView()
+        .modelContainer(container)
+        .environment(\.locale, Locale(identifier: "mk"))
+}
+

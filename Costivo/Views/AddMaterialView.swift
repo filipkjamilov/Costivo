@@ -4,35 +4,47 @@ import SwiftData
 struct AddMaterialView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    @Query private var settings: [AppSettings]
     
     @State private var name = ""
     @State private var pricePerUnit = ""
-    @State private var selectedUnitType: UnitType = .piece
-    @State private var selectedSpecificUnit = "piece"
+    @State private var selectedUnit = "piece"
+    @State private var showingPredefined = false
+    
+    private var currency: String {
+        settings.first?.preferredCurrency ?? "MKD"
+    }
     
     var body: some View {
         NavigationStack {
             Form {
+                Section {
+                    Button {
+                        showingPredefined = true
+                    } label: {
+                        Label("Choose from Common Materials", systemImage: "list.bullet")
+                    }
+                } header: {
+                    Text("Quick Add")
+                } footer: {
+                    Text("Select from common construction materials with preset units")
+                }
+                
                 Section("Material Details") {
                     TextField("Name (e.g., Concrete, Tiles)", text: $name)
                     
-                    TextField("Price per Unit", text: $pricePerUnit)
-                        .keyboardType(.decimalPad)
+                    HStack {
+                        Text(currency)
+                            .foregroundStyle(.secondary)
+                        TextField("Price per Unit", text: $pricePerUnit)
+                            .keyboardType(.decimalPad)
+                    }
                 }
                 
-                Section("Unit Type") {
-                    Picker("Unit Type", selection: $selectedUnitType) {
-                        ForEach(UnitType.allCases, id: \.self) { unitType in
-                            Text(unitType.rawValue).tag(unitType)
-                        }
-                    }
-                    .onChange(of: selectedUnitType) { _, newValue in
-                        selectedSpecificUnit = newValue.availableUnits.first ?? ""
-                    }
-                    
-                    Picker("Specific Unit", selection: $selectedSpecificUnit) {
-                        ForEach(selectedUnitType.availableUnits, id: \.self) { unit in
-                            Text(unit).tag(unit)
+                Section("Unit") {
+                    Picker("Unit", selection: $selectedUnit) {
+                        ForEach(Unit.allUnits, id: \.self) { unit in
+                            Text(Unit.localizedUnitKey(unit)).tag(unit)
                         }
                     }
                 }
@@ -53,6 +65,15 @@ struct AddMaterialView: View {
                     .disabled(!isValid)
                 }
             }
+            .sheet(isPresented: $showingPredefined) {
+                PredefinedMaterialsView { predefined in
+                    name = predefined.localizedName
+                    selectedUnit = predefined.unit
+                    if let suggested = predefined.suggestedPrice {
+                        pricePerUnit = String(format: "%.2f", suggested)
+                    }
+                }
+            }
         }
     }
     
@@ -66,8 +87,7 @@ struct AddMaterialView: View {
         let material = Material(
             name: name,
             pricePerUnit: price,
-            unitType: selectedUnitType,
-            specificUnit: selectedSpecificUnit
+            unit: selectedUnit
         )
         
         modelContext.insert(material)
@@ -75,7 +95,26 @@ struct AddMaterialView: View {
     }
 }
 
-#Preview {
-    AddMaterialView()
-        .modelContainer(for: Material.self)
+#Preview("English") {
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+    let container = try! ModelContainer(
+        for: Material.self, LaborRate.self, Job.self, AppSettings.self,
+        configurations: config
+    )
+    
+    return AddMaterialView()
+        .modelContainer(container)
+        .environment(\.locale, Locale(identifier: "en"))
+}
+
+#Preview("Macedonian") {
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+    let container = try! ModelContainer(
+        for: Material.self, LaborRate.self, Job.self, AppSettings.self,
+        configurations: config
+    )
+    
+    return AddMaterialView()
+        .modelContainer(container)
+        .environment(\.locale, Locale(identifier: "mk"))
 }

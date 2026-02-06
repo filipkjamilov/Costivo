@@ -4,11 +4,16 @@ import SwiftData
 struct AddLaborRateView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    @Query private var settings: [AppSettings]
     
     @State private var name = ""
     @State private var priceText = ""
     @State private var selectedPricingModel: PricingModel = .hourly
     @State private var unit = ""
+    
+    private var currency: String {
+        settings.first?.preferredCurrency ?? "MKD"
+    }
     
     var body: some View {
         NavigationStack {
@@ -16,14 +21,18 @@ struct AddLaborRateView: View {
                 Section("Labor Details") {
                     TextField("Name (e.g., Installation, Painting)", text: $name)
                     
-                    TextField("Price", text: $priceText)
-                        .keyboardType(.decimalPad)
+                    HStack {
+                        Text(currency)
+                            .foregroundStyle(.secondary)
+                        TextField("Price", text: $priceText)
+                            .keyboardType(.decimalPad)
+                    }
                 }
                 
                 Section("Pricing Model") {
                     Picker("Model", selection: $selectedPricingModel) {
                         ForEach(PricingModel.allCases, id: \.self) { model in
-                            Text(model.rawValue).tag(model)
+                            Text(model.localizedName).tag(model)
                         }
                     }
                     

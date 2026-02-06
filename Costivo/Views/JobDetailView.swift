@@ -13,7 +13,7 @@ struct JobDetailView: View {
     @State private var showingLaborPicker = false
     
     private var currency: String {
-        settings.first?.preferredCurrency ?? "€"
+        settings.first?.preferredCurrency ?? "MKD"
     }
     
     var body: some View {
@@ -144,7 +144,7 @@ struct JobDetailView: View {
                     let jobMaterial = JobMaterial(
                         materialName: material.name,
                         pricePerUnit: material.pricePerUnit,
-                        unit: material.specificUnit,
+                        unit: material.unit,
                         quantity: 1.0
                     )
                     job.materialEntries.append(jobMaterial)

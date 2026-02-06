@@ -5,7 +5,7 @@ import SwiftData
 final class AppSettings {
     var preferredCurrency: String
     
-    init(preferredCurrency: String = "€") {
+    init(preferredCurrency: String = "MKD") {
         self.preferredCurrency = preferredCurrency
     }
 }

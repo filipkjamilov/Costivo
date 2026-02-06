@@ -18,7 +18,7 @@ struct MaterialPickerView: View {
                             Text(material.name)
                                 .font(.headline)
                                 .foregroundStyle(.primary)
-                            Text("\(material.pricePerUnit, specifier: "%.2f") / \(material.specificUnit)")
+                            Text("\(String(format: "%.2f", material.pricePerUnit)) / \(Unit.localizedUnit(material.unit))")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         }

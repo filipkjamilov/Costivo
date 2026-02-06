@@ -6,12 +6,17 @@ struct AddJobView: View {
     @Environment(\.dismiss) private var dismiss
     @Query private var materials: [Material]
     @Query private var laborRates: [LaborRate]
+    @Query private var settings: [AppSettings]
     
     @State private var clientName = ""
     @State private var selectedMaterials: [SelectedMaterial] = []
     @State private var selectedLabor: [SelectedLabor] = []
     @State private var showingMaterialPicker = false
     @State private var showingLaborPicker = false
+    
+    private var currency: String {
+        settings.first?.preferredCurrency ?? "MKD"
+    }
     
     var body: some View {
         NavigationStack {
@@ -26,7 +31,7 @@ struct AddJobView: View {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(material.material.name)
                                     .font(.subheadline)
-                                Text("\(material.material.pricePerUnit, specifier: "%.2f") / \(material.material.specificUnit)")
+                                Text("\(String(format: "%.2f", material.material.pricePerUnit)) / \(Unit.localizedUnit(material.material.unit))")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                             }
@@ -38,7 +43,7 @@ struct AddJobView: View {
                                 .multilineTextAlignment(.trailing)
                                 .frame(width: 60)
                             
-                            Text(material.material.specificUnit)
+                            Text(Unit.localizedUnit(material.material.unit))
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         }
@@ -97,7 +102,7 @@ struct AddJobView: View {
                         Text("Total")
                             .font(.headline)
                         Spacer()
-                        Text(totalCost, format: .currency(code: "EUR"))
+                        Text("\(currency)\(totalCost, specifier: "%.2f")")
                             .font(.title2)
                             .fontWeight(.bold)
                     }
@@ -149,7 +154,7 @@ struct AddJobView: View {
             let jobMaterial = JobMaterial(
                 materialName: selected.material.name,
                 pricePerUnit: selected.material.pricePerUnit,
-                unit: selected.material.specificUnit,
+                unit: selected.material.unit,
                 quantity: selected.quantity
             )
             job.materialEntries.append(jobMaterial)

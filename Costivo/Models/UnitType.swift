@@ -1,21 +1,20 @@
 import Foundation
+import SwiftUI
 
-enum UnitType: String, Codable, CaseIterable {
-    case length = "Length"
-    case area = "Area"
-    case volume = "Volume"
-    case piece = "Per Item"
+struct Unit {
+    static let allUnits = ["mm", "cm", "m", "km", "m²", "m³", "piece", "kg", "Lt"]
     
-    var availableUnits: [String] {
-        switch self {
-        case .length:
-            return ["mm", "cm", "m", "km"]
-        case .area:
-            return ["m²"]
-        case .volume:
-            return ["m³"]
-        case .piece:
-            return ["piece"]
+    static func localizedUnitKey(_ unit: String) -> LocalizedStringKey {
+        if unit == "piece" {
+            return "piece"
         }
+        return LocalizedStringKey(unit)
+    }
+    
+    static func localizedUnit(_ unit: String) -> String {
+        if unit == "piece" {
+            return String(localized: "piece")
+        }
+        return unit
     }
 }

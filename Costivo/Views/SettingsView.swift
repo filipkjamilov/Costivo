@@ -6,11 +6,11 @@ struct SettingsView: View {
     @Query private var settings: [AppSettings]
     @Query(sort: \LaborRate.name) private var laborRates: [LaborRate]
     
-    @State private var selectedCurrency: String = "€"
+    @State private var selectedCurrency: String = "MKD"
     @State private var showingAddLabor = false
     @State private var editingLabor: LaborRate?
     
-    private let availableCurrencies = ["€", "$", "£", "¥", "CHF", "SEK", "NOK", "DKK"]
+    private let availableCurrencies = ["MKD", "RSD", "€"]
     
     var body: some View {
         NavigationStack {

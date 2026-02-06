@@ -200,5 +200,49 @@ Costivo/
 └── CostivoApp.swift (Entry point with SwiftData setup)
 ```
 
+## Known Issues & Solutions
+
+### SwiftData Schema Migration in Previews
+
+**Problem**: After changing the Material model schema (from `unitTypeRaw` + `specificUnit` to just `unit`), Xcode previews stopped working. Materials could not be saved in previews even though the app worked fine in the simulator.
+
+**Root Cause**:
+- SwiftData previews were caching the old schema in memory
+- The old schema had: `unitTypeRaw: String` and `specificUnit: String`
+- The new schema has: `unit: String`
+- Previews were trying to use the new model with old cached data
+
+**Solution**:
+Updated all preview configurations to use explicit in-memory containers:
+
+```swift
+#Preview("English") {
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+    let container = try! ModelContainer(
+        for: Material.self, LaborRate.self, Job.self, AppSettings.self,
+        configurations: config
+    )
+
+    return MaterialsView()
+        .modelContainer(container)
+        .environment(\.locale, Locale(identifier: "en"))
+}
+```
+
+**Why This Works**:
+- `ModelConfiguration(isStoredInMemoryOnly: true)` creates a fresh database every time
+- No stale schema data persists between preview reloads
+- Each preview starts with the current model schema
+
+**Files Updated**:
+- `Costivo/Views/MaterialsView.swift` (lines 81-100)
+- `Costivo/Views/AddMaterialView.swift` (lines 89-108)
+- `Costivo/ContentView.swift` (lines 32-51)
+
+**Prevention**:
+- Always use `ModelConfiguration(isStoredInMemoryOnly: true)` for previews
+- When changing @Model schemas, restart Xcode or clean build folder
+- For the actual app, delete from simulator if schema changes
+
 ## Contact
 User: MR

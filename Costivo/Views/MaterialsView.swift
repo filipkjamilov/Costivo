@@ -59,7 +59,7 @@ struct MaterialRow: View {
     @Query private var settings: [AppSettings]
     
     private var currency: String {
-        settings.first?.preferredCurrency ?? "€"
+        settings.first?.preferredCurrency ?? "MKD"
     }
     
     var body: some View {
@@ -67,21 +67,37 @@ struct MaterialRow: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(material.name)
                     .font(.headline)
-                Text("\(material.unitType.rawValue)")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
             }
             
             Spacer()
             
-            Text("\(currency)\(material.pricePerUnit, specifier: "%.2f") / \(material.specificUnit)")
+            Text("\(currency)\(material.pricePerUnit, specifier: "%.2f") / \(Unit.localizedUnit(material.unit))")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }
     }
 }
 
-#Preview {
-    MaterialsView()
-        .modelContainer(for: [Material.self, AppSettings.self])
+#Preview("English") {
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+    let container = try! ModelContainer(
+        for: Material.self, LaborRate.self, Job.self, AppSettings.self,
+        configurations: config
+    )
+    
+    return MaterialsView()
+        .modelContainer(container)
+        .environment(\.locale, Locale(identifier: "en"))
+}
+
+#Preview("Macedonian") {
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+    let container = try! ModelContainer(
+        for: Material.self, LaborRate.self, Job.self, AppSettings.self,
+        configurations: config
+    )
+    
+    return MaterialsView()
+        .modelContainer(container)
+        .environment(\.locale, Locale(identifier: "mk"))
 }

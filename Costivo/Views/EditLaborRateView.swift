@@ -3,10 +3,15 @@ import SwiftData
 
 struct EditLaborRateView: View {
     @Environment(\.dismiss) private var dismiss
+    @Query private var settings: [AppSettings]
     @Bindable var laborRate: LaborRate
     
     @State private var priceText: String
     @State private var unit: String
+    
+    private var currency: String {
+        settings.first?.preferredCurrency ?? "MKD"
+    }
     
     init(laborRate: LaborRate) {
         self.laborRate = laborRate
@@ -20,19 +25,23 @@ struct EditLaborRateView: View {
                 Section("Labor Details") {
                     TextField("Name", text: $laborRate.name)
                     
-                    TextField("Price", text: $priceText)
-                        .keyboardType(.decimalPad)
-                        .onChange(of: priceText) { _, newValue in
-                            if let price = Double(newValue) {
-                                laborRate.price = price
+                    HStack {
+                        Text(currency)
+                            .foregroundStyle(.secondary)
+                        TextField("Price", text: $priceText)
+                            .keyboardType(.decimalPad)
+                            .onChange(of: priceText) { _, newValue in
+                                if let price = Double(newValue) {
+                                    laborRate.price = price
+                                }
                             }
-                        }
+                    }
                 }
                 
                 Section("Pricing Model") {
                     Picker("Model", selection: $laborRate.pricingModel) {
                         ForEach(PricingModel.allCases, id: \.self) { model in
-                            Text(model.rawValue).tag(model)
+                            Text(model.localizedName).tag(model)
                         }
                     }
                     

@@ -59,7 +59,7 @@ struct JobRow: View {
     @Query private var settings: [AppSettings]
     
     private var currency: String {
-        settings.first?.preferredCurrency ?? "€"
+        settings.first?.preferredCurrency ?? "MKD"
     }
     
     var body: some View {
