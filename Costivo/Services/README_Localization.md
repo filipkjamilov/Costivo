@@ -2,42 +2,50 @@
 
 ## Overview
 
-The `LocalizationService` provides a centralized, protocol-based approach to managing localized strings throughout the app. This makes it easy to:
+The `LocalizationService` provides a **type-safe, enum-based** approach to managing localized strings throughout the app. This follows iOS best practices and makes it easy to:
 
-- Maintain consistency in how strings are accessed
-- Switch between different localization providers (e.g., Phrase, Lokalise)
-- Test localization without changing the actual strings
-- Add new languages or translation services
+- **Type Safety**: Compiler-checked localization keys (no typos!)
+- **Autocomplete**: IDE suggestions for all available keys
+- **Centralized**: All keys defined in one enum
+- **Provider-Agnostic**: Easy integration with Phrase, Lokalise, etc.
+- **Testable**: Mock providers for unit tests
+
+Based on industry best practices from [Phrase](https://phrase.com/blog/posts/ios-app-localization-phrase/), [SwiftGen](https://github.com/SwiftGen/SwiftGen), and [modern Swift localization patterns](https://medium.com/@matsoftware/enumerable-localizable-keys-in-swift-4-2-23c7efd0604b).
 
 ## Basic Usage
 
-### Accessing Localized Strings
+### Simple Strings
 
-Use the shorthand `L` accessor throughout your code:
+Use the global `L()` function with enum keys:
 
 ```swift
-import Foundation
+// Simple string
+let clientLabel = L(.client)           // "Client" or "Клиент"
+let shareButton = L(.share)            // "Share" or "Сподели"
+let settingsTitle = L(.settings)       // "Settings" or "Поставки"
+```
 
-let L = LocalizationService.L
+### Formatted Strings
 
-// Use localized strings
-let clientLabel = L.client()           // Returns "Client" or "Клиент"
-let shareButton = L.share()            // Returns "Share" or "Сподели"
-let title = L.costEstimateWithClient("John Doe")  // Returns formatted title
+Pass arguments for strings with placeholders:
+
+```swift
+// String with format argument
+let title = L(.costEstimateWithClient, "John Doe")
+// Returns: "Cost Estimate - John Doe" or "Проценка на Трошоци - John Doe"
 ```
 
 ### Example in a View
 
 ```swift
 struct MyView: View {
-    let L = LocalizationService.L
-    
     var body: some View {
         VStack {
-            Text(L.client())
-            Button(L.share()) {
+            Text(L(.client))              // Type-safe!
+            Button(L(.share)) {
                 // Share action
             }
+            Text(L(.costEstimateWithClient, clientName))
         }
     }
 }
@@ -45,11 +53,33 @@ struct MyView: View {
 
 ## Architecture
 
-### Protocol-Based Design
+### Enum-Based Keys
+
+All localization keys are defined in a single enum:
+
+```swift
+enum LocalizationKey: String {
+    case client = "Client"
+    case share = "Share"
+    case costEstimateWithClient = "Cost Estimate - %@"
+    case noMaterials = "No materials yet"
+    case addMaterialToStart = "Add Material"
+    // ... all other keys
+}
+```
+
+**Benefits:**
+- ✅ **Autocomplete**: IDE suggests all available keys
+- ✅ **Type-safe**: Compiler catches typos at build time
+- ✅ **Refactoring**: Rename keys safely across the entire codebase
+- ✅ **Enumerable**: Can iterate all keys for testing
+
+### Protocol-Based Provider
 
 ```swift
 protocol LocalizationProvider {
-    func localizedString(forKey key: String, comment: String) -> String
+    func localizedString(_ key: LocalizationKey) -> String
+    func localizedString(_ key: LocalizationKey, _ args: CVarArg...) -> String
 }
 ```
 
@@ -62,9 +92,23 @@ This protocol allows you to:
 ### Current Implementation
 
 ```
+┌──────────────────────┐
+│  L(.client)          │  ← Global function
+│  L(.share)           │
+└──────────┬───────────┘
+           │
+           ▼
 ┌─────────────────────────────┐
 │   LocalizationService       │
 │   (Singleton)               │
+└──────────┬──────────────────┘
+           │
+           ▼
+┌─────────────────────────────┐
+│  LocalizationKey (Enum)     │
+│  • .client                  │
+│  • .share                   │
+│  • .costEstimateWithClient  │
 └──────────┬──────────────────┘
            │
            ▼
@@ -92,9 +136,14 @@ class PhraseLocalizationProvider: LocalizationProvider {
         self.phraseClient = PhraseClient(apiKey: apiKey, projectId: projectId)
     }
     
-    func localizedString(forKey key: String, comment: String) -> String {
+    func localizedString(_ key: LocalizationKey) -> String {
         // Fetch from Phrase with fallback to iOS native
-        return phraseClient.getString(key) ?? NSLocalizedString(key, comment: comment)
+        return phraseClient.getString(key.rawValue) ?? NSLocalizedString(key.rawValue, comment: "")
+    }
+    
+    func localizedString(_ key: LocalizationKey, _ args: CVarArg...) -> String {
+        let format = phraseClient.getString(key.rawValue) ?? NSLocalizedString(key.rawValue, comment: "")
+        return String(format: format, arguments: args)
     }
 }
 ```
@@ -118,7 +167,7 @@ LocalizationService.shared.setProvider(provider)
 
 ### Step 3: That's It!
 
-All existing code continues to work without changes because it uses the `LocalizationService.L` accessor.
+All existing code continues to work without changes because it uses the `L()` function with enum keys.
 
 ## Benefits
 
@@ -139,13 +188,25 @@ Easy to mock for unit tests:
 
 ```swift
 class MockLocalizationProvider: LocalizationProvider {
-    func localizedString(forKey key: String, comment: String) -> String {
-        return "TEST_\(key)"
+    func localizedString(_ key: LocalizationKey) -> String {
+        return "TEST_\(key.rawValue)"
+    }
+    
+    func localizedString(_ key: LocalizationKey, _ args: CVarArg...) -> String {
+        return "TEST_\(key.rawValue)_WITH_ARGS"
     }
 }
 
 // In tests
 LocalizationService.shared.setProvider(MockLocalizationProvider())
+
+// Test that all keys have translations (requires CaseIterable)
+func testAllKeysHaveTranslations() {
+    for key in LocalizationKey.allCases {
+        let translation = L(key)
+        XCTAssertFalse(translation.isEmpty)
+    }
+}
 ```
 
 ### 5. Remote Translations
@@ -153,25 +214,33 @@ Can load translations from a remote server on app launch without redeploying.
 
 ## Adding New Strings
 
-### Step 1: Add to Localizable.xcstrings
-
-Add the key and translations to `Localizable.xcstrings`
-
-### Step 2: Add Method to LocalizationService
+### Step 1: Add to LocalizationKey Enum
 
 ```swift
-extension LocalizationService {
-    func myNewString() -> String {
-        provider.localizedString(forKey: "My New String", comment: "Description")
-    }
+enum LocalizationKey: String {
+    // ... existing keys
+    case myNewFeature = "My New Feature"
+    case welcomeMessage = "Welcome to %@"
 }
 ```
+
+### Step 2: Add to Localizable.xcstrings
+
+Add the key and translations to `Localizable.xcstrings`:
+- English: "My New Feature"
+- Macedonian: "Моја Нова Карактеристика"
 
 ### Step 3: Use It
 
 ```swift
-let text = LocalizationService.L.myNewString()
+// Simple string
+let text = L(.myNewFeature)
+
+// With arguments
+let message = L(.welcomeMessage, userName)
 ```
+
+**That's it!** The compiler ensures type safety throughout your app.
 
 ## Integration Services Comparison
 

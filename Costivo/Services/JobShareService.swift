@@ -3,18 +3,17 @@ import Foundation
 struct JobShareService {
     /// Formats a job into a shareable text format
     static func formatJobForSharing(job: Job, currency: String) -> String {
-        let L = LocalizationService.L
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .medium
         dateFormatter.timeStyle = .none
         
         var text = """
         ━━━━━━━━━━━━━━━━━━━━━━━━━━
-        📋 \(L.costEstimate())
+        📋 \(L(.costEstimate))
         ━━━━━━━━━━━━━━━━━━━━━━━━━━
         
-        \(L.client()): \(job.clientName)
-        \(L.date()): \(dateFormatter.string(from: job.createdDate))
+        \(L(.client)): \(job.clientName)
+        \(L(.date)): \(dateFormatter.string(from: job.createdDate))
         
         """
         
@@ -23,7 +22,7 @@ struct JobShareService {
             text += """
             
             ━━━━━━━━━━━━━━━━━━━━━━━━━━
-            🔨 \(L.materials())
+            🔨 \(L(.materials))
             ━━━━━━━━━━━━━━━━━━━━━━━━━━
             
             """
@@ -39,7 +38,7 @@ struct JobShareService {
             
             let materialsTotal = job.materialEntries.reduce(0) { $0 + $1.totalPrice }
             let totalStr = String(format: "%.2f", materialsTotal)
-            text += "\n\(L.materialsTotal()) \(currency)\(totalStr)"
+            text += "\n\(L(.materialsTotal)) \(currency)\(totalStr)"
         }
         
         // Labor section
@@ -48,7 +47,7 @@ struct JobShareService {
             
             
             ━━━━━━━━━━━━━━━━━━━━━━━━━━
-            👷 \(L.labor())
+            👷 \(L(.labor))
             ━━━━━━━━━━━━━━━━━━━━━━━━━━
             
             """
@@ -64,7 +63,7 @@ struct JobShareService {
             
             let laborTotal = job.laborEntries.reduce(0) { $0 + $1.totalPrice }
             let totalStr = String(format: "%.2f", laborTotal)
-            text += "\n\(L.laborTotal()) \(currency)\(totalStr)"
+            text += "\n\(L(.laborTotal)) \(currency)\(totalStr)"
         }
         
         // Total
@@ -72,19 +71,19 @@ struct JobShareService {
         
         
         ━━━━━━━━━━━━━━━━━━━━━━━━━━
-        💰 \(L.totalCost())
+        💰 \(L(.totalCost))
         ━━━━━━━━━━━━━━━━━━━━━━━━━━
         
         """
         
         let grandTotal = String(format: "%.2f", job.totalCost)
-        text += "\(L.total()) \(currency)\(grandTotal)"
+        text += "\(L(.totalLabel)) \(currency)\(grandTotal)"
         
         text += """
         
         
         ━━━━━━━━━━━━━━━━━━━━━━━━━━
-        \(L.generatedByCostivo())
+        \(L(.generatedByCostivo))
         """
         
         return text

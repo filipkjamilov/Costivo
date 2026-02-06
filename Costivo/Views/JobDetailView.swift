@@ -22,7 +22,7 @@ struct JobDetailView: View {
     }
     
     private var shareTitle: String {
-        LocalizationService.L.costEstimateWithClient(job.clientName)
+        L(.costEstimateWithClient, job.clientName)
     }
     
     var body: some View {
