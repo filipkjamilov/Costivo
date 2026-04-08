@@ -15,9 +15,12 @@ struct CostivoApp: App {
             ContentView()
         }
         .modelContainer(for: [Material.self, LaborRate.self, Job.self, JobMaterial.self, JobLabor.self, AppSettings.self]) { result in
-            // Handle any schema migration if needed
             if case .failure(let error) = result {
                 print("Failed to initialize model container: \(error)")
+                return
+            }
+            if case .success(let container) = result {
+                SeedData.insertIfNeeded(into: container.mainContext)
             }
         }
     }

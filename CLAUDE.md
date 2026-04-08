@@ -244,5 +244,44 @@ Updated all preview configurations to use explicit in-memory containers:
 - When changing @Model schemas, restart Xcode or clean build folder
 - For the actual app, delete from simulator if schema changes
 
+## Agent Architecture Rules
+
+These rules are mandatory. The agent must follow them when writing or modifying any code in this project.
+
+### File Placement
+- All `@Model` classes → `Costivo/Models/`
+- All SwiftUI views → `Costivo/Views/`
+- No new directories unless explicitly approved
+- One type per file; filename must match the type name exactly
+
+### Adding a New Model
+1. Create `Costivo/Models/ModelName.swift` with `@Model final class`
+2. Register it in `CostivoApp.swift` inside `ModelContainer(for:)` alongside existing models
+3. If the model is a child (e.g., a join/entry type like `JobMaterial`), add a `@Relationship(deleteRule: .cascade)` on the parent side
+
+### Adding a New View
+1. Create `Costivo/Views/ViewName.swift`
+2. Follow existing naming pattern: list views end in `View`, add/edit sheets end in `AddXView` / `EditXView`, pickers end in `PickerView`
+3. Every new view file must include a `#Preview` using an in-memory `ModelContainer` (see Known Issues & Solutions)
+4. Inject the model context via `@Environment(\.modelContext)` — do not pass it as a parameter
+
+### SwiftData Rules
+- Never use `try!` except inside `#Preview` blocks
+- Always use `@Query` for fetching lists in views — do not fetch manually in `onAppear`
+- Use `modelContext.insert()` to add, `modelContext.delete()` to remove
+- `totalCost` on `Job` is always computed on save — never store a stale value
+
+### SwiftUI Patterns
+- Use `@State` for local view state, `@Bindable` for SwiftData model editing
+- Sheets and navigation pushes are the only two navigation patterns — no custom routers
+- Currency symbol is always read from `AppSettings` via `@Query` — never hardcode `€` or any symbol
+
+### What the Agent Must NOT Do
+- Do not add Combine, ObservableObject, or `@Published` — use SwiftData + `@State`/`@Bindable`
+- Do not create helper/utility files for one-off operations
+- Do not add a 4th tab without explicit instruction
+- Do not change the SwiftData schema (add/remove/rename stored properties) without warning the user about migration risk
+- Do not use `async/await` for SwiftData operations — SwiftData on main actor is synchronous
+
 ## Contact
 User: MR
