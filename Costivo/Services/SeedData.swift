@@ -3,18 +3,11 @@ import Foundation
 
 struct SeedData {
 
-    static func insertIfNeeded(into context: ModelContext) {
-        guard ProcessInfo.processInfo.environment["IS_QA_BUILD"] == "YES" else { return }
-
-        // Only seed once — skip if data already exists
-        let materialCount = (try? context.fetchCount(FetchDescriptor<Material>())) ?? 0
-        guard materialCount == 0 else { return }
-
+    static func populate(into context: ModelContext) {
         let materials = insertMaterials(into: context)
         let laborRates = insertLaborRates(into: context)
         insertJobs(into: context, materials: materials, laborRates: laborRates)
         insertSettings(into: context)
-
         try? context.save()
     }
 
@@ -79,7 +72,6 @@ struct SeedData {
             }
             context.insert(job)
 
-            // Add 2 material entries (denormalized snapshot)
             for material in materials.prefix(2) {
                 let quantity = Double(Int.random(in: 1...5))
                 let entry = JobMaterial(
@@ -92,14 +84,12 @@ struct SeedData {
                 job.materialEntries.append(entry)
             }
 
-            // Add 1 labor entry
             if let rate = laborRates.first {
                 let hours = Double(Int.random(in: 2...8))
-                let unit = rate.unit ?? "h"
                 let entry = JobLabor(
                     laborName: rate.name,
                     pricePerUnit: rate.price,
-                    unit: unit,
+                    unit: rate.unit ?? "h",
                     quantity: hours
                 )
                 context.insert(entry)

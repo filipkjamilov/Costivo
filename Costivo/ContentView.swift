@@ -9,22 +9,33 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
+    @State private var showDebugConsole = false
+    private let isQABuild = ProcessInfo.processInfo.environment["IS_QA_BUILD"] == "YES"
+
     var body: some View {
         TabView {
             JobsView()
                 .tabItem {
                     Label("Jobs", systemImage: "doc.text")
                 }
-            
+
             MaterialsView()
                 .tabItem {
                     Label("Materials", systemImage: "cube.box")
                 }
-            
+
             SettingsView()
                 .tabItem {
                     Label("Settings", systemImage: "gearshape")
                 }
+        }
+        .sheet(isPresented: $showDebugConsole) {
+            DebugConsoleView()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .deviceDidShake)) { _ in
+            if isQABuild {
+                showDebugConsole = true
+            }
         }
     }
 }
