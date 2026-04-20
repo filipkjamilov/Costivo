@@ -120,6 +120,12 @@ struct JobsView: View {
                         systemImage: settings.handymanType.jobsIcon,
                         description: Text(L(.createFirstJob))
                     )
+                } else if filteredJobs.isEmpty {
+                    ContentUnavailableView(
+                        selectedFilter.label,
+                        systemImage: "line.3.horizontal.decrease.circle",
+                        description: Text(L(.noFilterResults))
+                    )
                 }
             }
         }

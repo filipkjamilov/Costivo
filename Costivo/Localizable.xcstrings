@@ -528,6 +528,23 @@
         }
       }
     },
+    "noFilterResults" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No jobs match this filter"
+          }
+        },
+        "mk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нема работи за овој филтер"
+          }
+        }
+      }
+    },
     "electrician" : {
       "extractionState" : "manual",
       "localizations" : {
