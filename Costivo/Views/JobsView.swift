@@ -4,6 +4,7 @@ import SwiftData
 struct JobsView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Job.createdDate, order: .reverse) private var jobs: [Job]
+    @Query private var settings: [AppSettings]
     @State private var showingAddJob = false
     @State private var selectedJob: Job?
     @State private var searchText = ""
@@ -27,6 +28,7 @@ struct JobsView: View {
                 }
                 .onDelete(perform: deleteJobs)
             }
+            .appBackground()
             .navigationTitle(L(.jobs))
             .if(jobs.count > 5) { view in
                 view.searchable(text: $searchText, prompt: L(.searchByClientName))
@@ -50,7 +52,7 @@ struct JobsView: View {
                 if jobs.isEmpty {
                     ContentUnavailableView(
                         L(.noJobs),
-                        systemImage: "doc.text",
+                        systemImage: settings.handymanType.jobsIcon,
                         description: Text(L(.createFirstJob))
                     )
                 }
@@ -70,7 +72,7 @@ struct JobRow: View {
     @Query private var settings: [AppSettings]
     
     private var currency: String {
-        settings.first?.preferredCurrency ?? "MKD"
+        settings.currency
     }
     
     var body: some View {

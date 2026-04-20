@@ -12,7 +12,7 @@ struct AddMaterialView: View {
     @State private var showingPredefined = false
     
     private var currency: String {
-        settings.first?.preferredCurrency ?? "MKD"
+        settings.currency
     }
     
     var body: some View {
@@ -49,6 +49,7 @@ struct AddMaterialView: View {
                     }
                 }
             }
+            .appBackground()
             .navigationTitle(L(.addMaterialButton))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

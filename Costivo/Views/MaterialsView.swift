@@ -4,6 +4,7 @@ import SwiftData
 struct MaterialsView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Material.name) private var materials: [Material]
+    @Query private var settings: [AppSettings]
     @State private var showingAddMaterial = false
     @State private var editingMaterial: Material?
     
@@ -19,6 +20,7 @@ struct MaterialsView: View {
                 }
                 .onDelete(perform: deleteMaterials)
             }
+            .appBackground()
             .navigationTitle(L(.materialsTitle))
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -39,7 +41,7 @@ struct MaterialsView: View {
                 if materials.isEmpty {
                     ContentUnavailableView(
                         L(.noMaterialsYet),
-                        systemImage: "cube.box",
+                        systemImage: settings.handymanType.materialsIcon,
                         description: Text(L(.addFirstMaterial))
                     )
                 }
@@ -59,7 +61,7 @@ struct MaterialRow: View {
     @Query private var settings: [AppSettings]
     
     private var currency: String {
-        settings.first?.preferredCurrency ?? "MKD"
+        settings.currency
     }
     
     var body: some View {

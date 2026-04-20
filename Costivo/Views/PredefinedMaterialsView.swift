@@ -43,6 +43,7 @@ struct PredefinedMaterialsView: View {
                     }
                 }
             }
+            .appBackground()
             .navigationTitle(L(.commonMaterials))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

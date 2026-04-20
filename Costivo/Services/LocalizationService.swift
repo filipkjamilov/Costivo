@@ -85,6 +85,18 @@ enum LocalizationKey: String, CaseIterable {
     case addMaterialsFirst
     case addLaborRatesFirst
     
+    // MARK: - Handyman Types
+    case profession
+    case construction
+    case plumber
+    case electrician
+    case painter
+    case carpenter
+    case tiler
+    case chooseProfession
+    case professionDescription
+    case preview
+
     // MARK: - Edit Views
     case editMaterial
     case editLaborRate

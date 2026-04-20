@@ -19,6 +19,7 @@ struct LaborRatesView: View {
                 }
                 .onDelete(perform: deleteLaborRates)
             }
+            .appBackground()
             .navigationTitle(L(.laborRates))
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -59,7 +60,7 @@ struct LaborRateRow: View {
     @Query private var settings: [AppSettings]
     
     private var currency: String {
-        settings.first?.preferredCurrency ?? "MKD"
+        settings.currency
     }
     
     var body: some View {

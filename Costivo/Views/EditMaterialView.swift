@@ -9,7 +9,7 @@ struct EditMaterialView: View {
     @State private var priceText: String
     
     private var currency: String {
-        settings.first?.preferredCurrency ?? "MKD"
+        settings.currency
     }
     
     init(material: Material) {
@@ -44,6 +44,7 @@ struct EditMaterialView: View {
                     }
                 }
             }
+            .appBackground()
             .navigationTitle(L(.editMaterial))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

@@ -30,6 +30,7 @@ struct LaborPickerView: View {
                     }
                 }
             }
+            .appBackground()
             .navigationTitle(L(.selectLabor))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

@@ -10,7 +10,7 @@ struct EditLaborRateView: View {
     @State private var unit: String
     
     private var currency: String {
-        settings.first?.preferredCurrency ?? "MKD"
+        settings.currency
     }
     
     init(laborRate: LaborRate) {
@@ -53,6 +53,7 @@ struct EditLaborRateView: View {
                     }
                 }
             }
+            .appBackground()
             .navigationTitle(L(.editLaborRate))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

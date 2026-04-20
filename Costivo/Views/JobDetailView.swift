@@ -14,7 +14,7 @@ struct JobDetailView: View {
     @State private var showingShareSheet = false
     
     private var currency: String {
-        settings.first?.preferredCurrency ?? "MKD"
+        settings.currency
     }
     
     private var shareText: String {
@@ -139,6 +139,7 @@ struct JobDetailView: View {
                     }
                 }
             }
+            .appBackground()
             .navigationTitle(L(.jobDetails))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

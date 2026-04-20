@@ -30,6 +30,7 @@ struct MaterialPickerView: View {
                     }
                 }
             }
+            .appBackground()
             .navigationTitle(L(.selectMaterial))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -43,7 +44,7 @@ struct MaterialPickerView: View {
                 if materials.isEmpty {
                     ContentUnavailableView(
                         L(.noMaterialsAvailable),
-                        systemImage: "cube.box",
+                        systemImage: "shippingbox",
                         description: Text(L(.addMaterialsFirst))
                     )
                 }

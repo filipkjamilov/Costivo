@@ -9,6 +9,7 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
+    @Query private var settings: [AppSettings]
     @State private var showDebugConsole = false
     private let isQABuild = ProcessInfo.processInfo.environment["IS_QA_BUILD"] == "YES"
 
@@ -16,17 +17,17 @@ struct ContentView: View {
         TabView {
             JobsView()
                 .tabItem {
-                    Label("Jobs", systemImage: "doc.text")
+                    Label("Jobs", systemImage: settings.handymanType.jobsIcon)
                 }
 
             MaterialsView()
                 .tabItem {
-                    Label("Materials", systemImage: "cube.box")
+                    Label("Materials", systemImage: settings.handymanType.materialsIcon)
                 }
 
             SettingsView()
                 .tabItem {
-                    Label("Settings", systemImage: "gearshape")
+                    Label("Settings", systemImage: settings.handymanType.settingsIcon)
                 }
         }
         .sheet(isPresented: $showDebugConsole) {

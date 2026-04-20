@@ -15,7 +15,7 @@ struct AddJobView: View {
     @State private var showingLaborPicker = false
     
     private var currency: String {
-        settings.first?.preferredCurrency ?? "MKD"
+        settings.currency
     }
     
     var body: some View {
@@ -108,6 +108,7 @@ struct AddJobView: View {
                     }
                 }
             }
+            .appBackground()
             .navigationTitle(L(.newJob))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

@@ -12,7 +12,7 @@ struct AddLaborRateView: View {
     @State private var unit = ""
     
     private var currency: String {
-        settings.first?.preferredCurrency ?? "MKD"
+        settings.currency
     }
     
     var body: some View {
@@ -41,6 +41,7 @@ struct AddLaborRateView: View {
                     }
                 }
             }
+            .appBackground()
             .navigationTitle(L(.addLaborRate))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

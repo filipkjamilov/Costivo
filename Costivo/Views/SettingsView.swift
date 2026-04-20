@@ -8,6 +8,7 @@ struct SettingsView: View {
     @Query(sort: \LaborRate.name) private var laborRates: [LaborRate]
     
     @State private var selectedCurrency: String = "MKD"
+    @State private var showingProfessionPicker = false
     @State private var showingAddLabor = false
     @State private var editingLabor: LaborRate?
     
@@ -38,10 +39,23 @@ struct SettingsView: View {
                     .onChange(of: selectedCurrency) { _, _ in
                         saveSettings()
                     }
+
+                    Button {
+                        showingProfessionPicker = true
+                    } label: {
+                        HStack {
+                            Text(L(.profession))
+                                .foregroundStyle(.primary)
+                            Spacer()
+                            Label(
+                                settings.handymanType.localizedName,
+                                systemImage: settings.handymanType.jobsIcon
+                            )
+                            .foregroundStyle(.secondary)
+                        }
+                    }
                 } header: {
                     Text(L(.preferences))
-                } footer: {
-                    Text(L(.selectPreferredCurrency))
                 }
                 
                 Section {
@@ -79,12 +93,16 @@ struct SettingsView: View {
                     Text(L(.shareFeedbackPrompt))
                 }
             }
+            .appBackground()
             .navigationTitle(L(.settings))
             .navigationBarTitleDisplayMode(.large)
             .onAppear {
                 if let existingSettings = settings.first {
                     selectedCurrency = existingSettings.preferredCurrency
                 }
+            }
+            .sheet(isPresented: $showingProfessionPicker) {
+                ProfessionPickerView(current: settings.handymanType)
             }
             .sheet(isPresented: $showingAddLabor) {
                 AddLaborRateView()
