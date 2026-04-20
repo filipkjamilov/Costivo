@@ -6,19 +6,33 @@ final class Job {
     var id: UUID
     var clientName: String
     var createdDate: Date
+    var dueDate: Date?
+    var statusRaw: String = JobStatus.draft.rawValue
     var materialEntries: [JobMaterial]
     var laborEntries: [JobLabor]
-    
+
     var totalCost: Double {
         let materialsTotal = materialEntries.reduce(0) { $0 + $1.totalPrice }
         let laborTotal = laborEntries.reduce(0) { $0 + $1.totalPrice }
         return materialsTotal + laborTotal
     }
-    
-    init(clientName: String) {
+
+    var status: JobStatus {
+        get { JobStatus(rawValue: statusRaw) ?? .draft }
+        set { statusRaw = newValue.rawValue }
+    }
+
+    var isOverdue: Bool {
+        guard let dueDate, status != .completed, status != .archived else { return false }
+        return dueDate < Date()
+    }
+
+    init(clientName: String, dueDate: Date? = nil, status: JobStatus = .draft) {
         self.id = UUID()
         self.clientName = clientName
         self.createdDate = Date()
+        self.dueDate = dueDate
+        self.statusRaw = status.rawValue
         self.materialEntries = []
         self.laborEntries = []
     }

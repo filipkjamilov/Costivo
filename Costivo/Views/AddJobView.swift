@@ -9,6 +9,8 @@ struct AddJobView: View {
     @Query private var settings: [AppSettings]
     
     @State private var clientName = ""
+    @State private var hasDueDate = false
+    @State private var dueDate = Date()
     @State private var selectedMaterials: [SelectedMaterial] = []
     @State private var selectedLabor: [SelectedLabor] = []
     @State private var showingMaterialPicker = false
@@ -23,6 +25,12 @@ struct AddJobView: View {
             Form {
                 Section(L(.client)) {
                     TextField(L(.clientName), text: $clientName)
+
+                    Toggle(L(.dueDateOptional), isOn: $hasDueDate.animation())
+
+                    if hasDueDate {
+                        DatePicker(L(.dueDate), selection: $dueDate, displayedComponents: .date)
+                    }
                 }
                 
                 Section {
@@ -149,7 +157,11 @@ struct AddJobView: View {
     }
     
     private func saveJob() {
-        let job = Job(clientName: clientName)
+        let job = Job(
+            clientName: clientName,
+            dueDate: hasDueDate ? dueDate : nil,
+            status: hasDueDate ? .scheduled : .draft
+        )
         
         for selected in selectedMaterials {
             let jobMaterial = JobMaterial(

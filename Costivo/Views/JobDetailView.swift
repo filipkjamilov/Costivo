@@ -12,6 +12,14 @@ struct JobDetailView: View {
     @State private var showingMaterialPicker = false
     @State private var showingLaborPicker = false
     @State private var showingShareSheet = false
+    @State private var hasDueDate: Bool
+    @State private var dueDate: Date
+
+    init(job: Job) {
+        self.job = job
+        _hasDueDate = State(initialValue: job.dueDate != nil)
+        _dueDate = State(initialValue: job.dueDate ?? Date())
+    }
     
     private var currency: String {
         settings.currency
@@ -30,6 +38,28 @@ struct JobDetailView: View {
             Form {
                 Section(L(.client)) {
                     TextField(L(.clientName), text: $job.clientName)
+
+                    Picker(L(.status), selection: $job.status) {
+                        ForEach(JobStatus.allCases, id: \.self) { status in
+                            Label(status.localizedName, systemImage: status.icon)
+                                .tag(status)
+                        }
+                    }
+
+                    Toggle(L(.dueDateOptional), isOn: $hasDueDate.animation())
+                        .onChange(of: hasDueDate) { _, hasDate in
+                            job.dueDate = hasDate ? dueDate : nil
+                            if hasDate && job.status == .draft {
+                                job.status = .scheduled
+                            }
+                        }
+
+                    if hasDueDate {
+                        DatePicker(L(.dueDate), selection: $dueDate, displayedComponents: .date)
+                            .onChange(of: dueDate) { _, newDate in
+                                job.dueDate = newDate
+                            }
+                    }
                 }
                 
                 Section {

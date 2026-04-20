@@ -107,6 +107,24 @@ enum LocalizationKey: String, CaseIterable {
     case pricingModel
     case model
     case unitPlaceholder
+
+    // MARK: - Job Status & Due Date
+    case statusDraft
+    case statusScheduled
+    case statusCompleted
+    case dueDate
+    case dueDateOptional
+    case overdue
+    case filterAll
+    case filterUpcoming
+    case filterOverdue
+    case filterCompleted
+    case markCompleted
+    case markScheduled
+    case archiveJob
+    case status
+    case statusArchived
+    case filterArchived
 }
 
 // MARK: - Localization Protocol

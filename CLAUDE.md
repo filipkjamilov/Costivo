@@ -242,7 +242,7 @@ Updated all preview configurations to use explicit in-memory containers:
 **Prevention**:
 - Always use `ModelConfiguration(isStoredInMemoryOnly: true)` for previews
 - When changing @Model schemas, restart Xcode or clean build folder
-- For the actual app, delete from simulator if schema changes
+- For the actual app, schema changes must be safe lightweight migrations (see SwiftData Schema Migration rules) — never delete user data
 
 ## Agent Architecture Rules
 
@@ -270,6 +270,14 @@ These rules are mandatory. The agent must follow them when writing or modifying 
 - Always use `@Query` for fetching lists in views — do not fetch manually in `onAppear`
 - Use `modelContext.insert()` to add, `modelContext.delete()` to remove
 - `totalCost` on `Job` is always computed on save — never store a stale value
+
+### SwiftData Schema Migration (CRITICAL)
+**Users must NEVER lose their data.** The app is in production with real users. Every schema change must be a safe lightweight migration:
+- **New properties must be optional (`Type?`) or have a default value** — this is the only safe way to add fields
+- **Never rename or remove existing stored properties** — this breaks the schema and causes data loss
+- **Never tell the user to "delete and reinstall"** — that destroys their data
+- **Use the raw String + computed property pattern** for enums (e.g., `statusRaw: String` with computed `status: JobStatus`) — set a default value on the raw property so existing rows get a valid state
+- If a migration cannot be done safely with lightweight migration, stop and discuss with the user before proceeding
 
 ### SwiftUI Patterns
 - Use `@State` for local view state, `@Bindable` for SwiftData model editing
