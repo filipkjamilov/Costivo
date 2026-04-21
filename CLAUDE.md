@@ -29,16 +29,19 @@ Tab-based navigation with 3 main sections:
 3. **Settings Tab** - Currency, profession, labor rates management
 
 ### Onboarding Flow
-First-time users see a 3-step onboarding before the main app:
+First-time users see a 4-step onboarding before the main app, managed by `OnboardingView`:
 1. **Tutorial movie** — 3 auto-playing Lottie animation slides with text (non-interactive until finished)
-2. **Profession picker** — select trade (construction, plumber, electrician, etc.)
-3. **Currency picker** — select preferred currency with live preview
+2. **Business profile** — handyman name + optional company name with avatar circle showing initials
+3. **Profession picker** — select trade (construction, plumber, electrician, etc.)
+4. **Currency picker** — select preferred currency with live preview
+
+Onboarding logic lives in `OnboardingView.swift` — `ContentView` delegates to it and only shows the TabView once complete.
 
 Onboarding state is stored in `@AppStorage` (UserDefaults), NOT SwiftData — no schema changes needed.
-- `hasSeenTutorial`, `hasPickedProfession`, `hasPickedCurrency`
+- `hasSeenTutorial`, `hasSetProfile`, `hasPickedProfession`, `hasPickedCurrency`
 
 ### Dual-Mode View Pattern
-`ProfessionPickerView` and `CurrencyPickerView` both support two modes via an optional `onComplete` closure:
+`BusinessProfileView`, `ProfessionPickerView`, and `CurrencyPickerView` all support two modes via an optional `onComplete` closure:
 - **Onboarding mode** (`onComplete` provided): Full-screen layout with "Continue" button, no navigation bar
 - **Settings mode** (`onComplete` is `nil`): Wrapped in `NavigationStack` with "Done" toolbar button and `dismiss()`
 
@@ -78,9 +81,10 @@ Also includes predefined common materials for quick-add.
 ### Settings (Third Tab)
 **Purpose**: Preferences and labor rate management.
 
+- **Profile**: Shows `ProfileAvatar` with name/company, opens `BusinessProfileView` sheet
 - **Currency**: Opens `CurrencyPickerView` as a sheet ($, €, RSD, MKD) — managed by `Currency` enum
 - **Profession**: Opens `ProfessionPickerView` as a sheet
-- **Labor Rates**: NavigationLink pushes to `LaborRatesView` with full CRUD (hourly, fixed, per unit)
+- **Labor Rates**: NavigationLink pushes to `LaborRatesView` with count badge and full CRUD (hourly, fixed, per unit)
 - **Feedback**: Link to feedback form
 
 ## Data Models
@@ -111,7 +115,9 @@ Also includes predefined common materials for quick-add.
 ### AppSettings
 - preferredCurrency: String (raw value from `Currency` enum, default `"$"`)
 - handymanTypeRaw: String (computed `handymanType: HandymanType`)
-- Access via `[AppSettings]` extension: `settings.currency` returns `Currency`, `settings.handymanType` returns `HandymanType`
+- handymanName: String? (craftsman's display name)
+- businessName: String? (optional company name)
+- Access via `[AppSettings]` extension: `settings.currency` returns `Currency`, `settings.handymanType` returns `HandymanType`, `settings.handymanName` / `settings.businessName` return `String`
 
 ### Enums (separate files)
 - `Currency`: usd ($), eur (€), rsd (RSD), mkd (MKD) — has `.symbol`, `.label`, `.default`
@@ -208,8 +214,9 @@ Costivo/
 │   ├── AddMaterialView.swift
 │   ├── AnimationView.swift (Lottie wrapper)
 │   ├── AppColor.swift (Color palette)
+│   ├── BusinessProfileView.swift (Dual-mode: onboarding + settings, contains ProfileAvatar)
 │   ├── CurrencyPickerView.swift (Dual-mode: onboarding + settings)
-│   ├── DebugConsoleView.swift
+│   ├── DebugConsoleView.swift (Shake to open, full reset support)
 │   ├── EditLaborRateView.swift
 │   ├── EditMaterialView.swift
 │   ├── JobDetailView.swift
@@ -218,13 +225,14 @@ Costivo/
 │   ├── LaborRatesView.swift
 │   ├── MaterialPickerView.swift
 │   ├── MaterialsView.swift
+│   ├── OnboardingView.swift (4-step onboarding flow)
 │   ├── PredefinedMaterialsView.swift
 │   ├── ProfessionPickerView.swift (Dual-mode: onboarding + settings)
 │   ├── SettingsView.swift
 │   ├── ShareSheet.swift
 │   ├── Theme.swift (.appBackground() modifier)
 │   └── TutorialView.swift (Auto-playing onboarding movie)
-├── ContentView.swift (Onboarding gate + Tab navigation)
+├── ContentView.swift (Delegates to OnboardingView or TabView)
 └── CostivoApp.swift (Entry point with SwiftData setup)
 ```
 
@@ -250,6 +258,18 @@ Costivo/
 **Prevention**:
 - Always use in-memory containers for previews
 - When changing @Model schemas, restart Xcode or clean build folder
+
+### Debug Console & Build Schemes
+The app has two schemes:
+- **Costivo** — standard scheme (`Debug` / `Release` configurations)
+- **Costivo Dev** — QA scheme (`Dev` configuration, has `QA_BUILD` compiler flag)
+
+The debug console is triggered by a shake gesture, gated by `#if DEBUG || QA_BUILD`. This ensures it works:
+- When running from Xcode (any scheme, via `DEBUG`)
+- In TestFlight Dev builds (via `QA_BUILD` baked into the binary)
+- Never in production Release builds
+
+The debug console supports: viewing app info, database stats, populating test data, clearing all data, and full reset (UserDefaults + SwiftData).
 
 ### Lottie UIViewRepresentable Steals Touches
 Lottie's SwiftUI wrapper uses a UIKit view that intercepts touch events. `allowsHitTesting(false)` on the SwiftUI level may not work on the animation itself. Solution: put interactive elements (buttons) in a separate overlay ZStack layer on top of the animation content, or apply `.allowsHitTesting(false)` to the entire content VStack and overlay the button separately.
