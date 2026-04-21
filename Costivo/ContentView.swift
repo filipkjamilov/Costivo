@@ -12,25 +12,27 @@ struct ContentView: View {
     @Query private var settings: [AppSettings]
     @State private var showDebugConsole = false
     @State private var onboardingComplete = false
+    @AppStorage("hasSeenWalkthrough") private var hasSeenWalkthrough = false
     @AppStorage("hasPickedCurrency") private var hasPickedCurrency = false
+    @AppStorage("walkthroughMigrationDone") private var walkthroughMigrationDone = false
 
     var body: some View {
         Group {
-            if hasPickedCurrency || onboardingComplete {
+            if hasSeenWalkthrough || onboardingComplete {
                 TabView {
                     JobsView()
                         .tabItem {
-                            Label("Jobs", systemImage: settings.handymanType.jobsIcon)
+                            Label(L(.jobs), systemImage: settings.handymanType.jobsIcon)
                         }
 
                     MaterialsView()
                         .tabItem {
-                            Label("Materials", systemImage: settings.handymanType.materialsIcon)
+                            Label(L(.materialsTitle), systemImage: settings.handymanType.materialsIcon)
                         }
 
                     SettingsView()
                         .tabItem {
-                            Label("Settings", systemImage: settings.handymanType.settingsIcon)
+                            Label(L(.settings), systemImage: settings.handymanType.settingsIcon)
                         }
                 }
             } else {
@@ -47,6 +49,16 @@ struct ContentView: View {
             showDebugConsole = true
         }
         #endif
+        .onAppear {
+            // One-time migration: existing users who completed onboarding
+            // before the walkthrough was added skip it automatically.
+            if !walkthroughMigrationDone {
+                walkthroughMigrationDone = true
+                if hasPickedCurrency && !hasSeenWalkthrough {
+                    hasSeenWalkthrough = true
+                }
+            }
+        }
     }
 }
 

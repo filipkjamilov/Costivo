@@ -62,33 +62,39 @@ struct LaborRateRow: View {
     }
     
     var body: some View {
-        HStack {
+        HStack(spacing: 12) {
+            Image(systemName: "wrench.and.screwdriver.fill")
+                .foregroundStyle(Color.orangeBase)
+                .font(.title3)
+                .frame(width: 28)
+
             VStack(alignment: .leading, spacing: 4) {
                 Text(laborRate.name)
                     .font(.headline)
-                Text(laborRate.pricingModel.rawValue)
+                Text(subtitleText)
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
-            
+
             Spacer()
-            
-            Text(formattedPrice)
+
+            Text("\(currency)\(laborRate.price, specifier: "%.2f")")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }
     }
-    
-    private var formattedPrice: String {
-        let priceStr = "\(currency)\(String(format: "%.2f", laborRate.price))"
-        
+
+    private var subtitleText: String {
         switch laborRate.pricingModel {
         case .hourly:
-            return "\(priceStr) / hour"
+            return laborRate.pricingModel.rawValue
         case .fixed:
-            return "\(priceStr) / job"
+            return laborRate.pricingModel.rawValue
         case .perUnit:
-            return "\(priceStr) / \(laborRate.unit ?? "unit")"
+            if let unit = laborRate.unit, !unit.isEmpty {
+                return "\(laborRate.pricingModel.rawValue) · \(unit)"
+            }
+            return laborRate.pricingModel.rawValue
         }
     }
 }

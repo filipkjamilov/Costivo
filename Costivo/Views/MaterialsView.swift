@@ -65,15 +65,23 @@ struct MaterialRow: View {
     }
     
     var body: some View {
-        HStack {
+        HStack(spacing: 12) {
+            Image(systemName: "cube.box.fill")
+                .foregroundStyle(Color.blueBold)
+                .font(.title3)
+                .frame(width: 28)
+
             VStack(alignment: .leading, spacing: 4) {
                 Text(material.name)
                     .font(.headline)
+                Text(Unit.localizedUnit(material.unit))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
-            
+
             Spacer()
-            
-            Text("\(currency)\(material.pricePerUnit, specifier: "%.2f") / \(Unit.localizedUnit(material.unit))")
+
+            Text("\(currency)\(material.pricePerUnit, specifier: "%.2f")")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }

@@ -5,6 +5,7 @@ struct OnboardingView: View {
     @AppStorage("hasSetProfile") private var hasSetProfile = false
     @AppStorage("hasPickedProfession") private var hasPickedProfession = false
     @AppStorage("hasPickedCurrency") private var hasPickedCurrency = false
+    @AppStorage("hasSeenWalkthrough") private var hasSeenWalkthrough = false
 
     var onComplete: () -> Void
 
@@ -31,6 +32,12 @@ struct OnboardingView: View {
             CurrencyPickerView {
                 withAnimation {
                     hasPickedCurrency = true
+                }
+            }
+        } else if !hasSeenWalkthrough {
+            FeatureWalkthroughView {
+                withAnimation {
+                    hasSeenWalkthrough = true
                     onComplete()
                 }
             }
@@ -38,6 +45,6 @@ struct OnboardingView: View {
     }
 
     var isComplete: Bool {
-        hasSeenTutorial && hasSetProfile && hasPickedProfession && hasPickedCurrency
+        hasSeenTutorial && hasSetProfile && hasPickedProfession && hasPickedCurrency && hasSeenWalkthrough
     }
 }

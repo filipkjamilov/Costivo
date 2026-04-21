@@ -140,6 +140,21 @@ enum LocalizationKey: String, CaseIterable {
     case tutorialSlide2
     case tutorialSlide3
     case tutorialGetStarted
+
+    // MARK: - Feature Walkthrough
+    case walkthroughNext
+    case walkthroughSkip
+    case walkthroughStart
+    case walkthroughMaterialsTitle
+    case walkthroughMaterialsSubtitle
+    case walkthroughJobTitle
+    case walkthroughJobSubtitle
+    case walkthroughSwipeCompleteTitle
+    case walkthroughSwipeCompleteSubtitle
+    case walkthroughSwipeArchiveTitle
+    case walkthroughSwipeArchiveSubtitle
+    case walkthroughJobCompleted
+    case walkthroughJobArchived
 }
 
 // MARK: - Localization Protocol

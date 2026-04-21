@@ -29,16 +29,19 @@ Tab-based navigation with 3 main sections:
 3. **Settings Tab** - Currency, profession, labor rates management
 
 ### Onboarding Flow
-First-time users see a 4-step onboarding before the main app, managed by `OnboardingView`:
+First-time users see a 5-step onboarding before the main app, managed by `OnboardingView`:
 1. **Tutorial movie** — 3 auto-playing Lottie animation slides with text (non-interactive until finished)
 2. **Business profile** — handyman name + optional company name with avatar circle showing initials
 3. **Profession picker** — select trade (construction, plumber, electrician, etc.)
 4. **Currency picker** — select preferred currency with live preview
+5. **Feature walkthrough** — 4-page animated walkthrough showing materials/labor, job creation, swipe-to-complete, and swipe-to-archive with mock UI demos
 
 Onboarding logic lives in `OnboardingView.swift` — `ContentView` delegates to it and only shows the TabView once complete.
 
 Onboarding state is stored in `@AppStorage` (UserDefaults), NOT SwiftData — no schema changes needed.
-- `hasSeenTutorial`, `hasSetProfile`, `hasPickedProfession`, `hasPickedCurrency`
+- `hasSeenTutorial`, `hasSetProfile`, `hasPickedProfession`, `hasPickedCurrency`, `hasSeenWalkthrough`
+
+**Backward compatibility**: `ContentView` uses `.onAppear` to auto-set `hasSeenWalkthrough = true` for existing users who already have `hasPickedCurrency = true`, so they skip the walkthrough.
 
 ### Dual-Mode View Pattern
 `BusinessProfileView`, `ProfessionPickerView`, and `CurrencyPickerView` all support two modes via an optional `onComplete` closure:
@@ -219,6 +222,7 @@ Costivo/
 │   ├── DebugConsoleView.swift (Shake to open, full reset support)
 │   ├── EditLaborRateView.swift
 │   ├── EditMaterialView.swift
+│   ├── FeatureWalkthroughView.swift (4-page animated feature demo)
 │   ├── JobDetailView.swift
 │   ├── JobsView.swift (Main screen)
 │   ├── LaborPickerView.swift
