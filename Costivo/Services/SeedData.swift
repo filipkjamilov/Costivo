@@ -59,16 +59,24 @@ struct SeedData {
     private static func insertJobs(into context: ModelContext, materials: [Material], laborRates: [LaborRate]) {
         guard !materials.isEmpty, !laborRates.isEmpty else { return }
 
-        let jobSpecs: [(String, Int)] = [
-            ("John Smith - Bathroom Renovation", 0),
-            ("ABC Construction - Foundation Work", -3),
-            ("Maria Lopez - Kitchen Tiling", -7),
+        let cal = Calendar.current
+        let now = Date()
+
+        let jobSpecs: [(String, Int, JobStatus, Int?)] = [
+            // (clientName, createdDaysAgo, status, dueDateDaysFromNow)
+            ("John Smith - Bathroom Renovation", 0, .draft, nil),
+            ("ABC Construction - Foundation Work", -3, .scheduled, 2),
+            ("Maria Lopez - Kitchen Tiling", -7, .scheduled, -1),  // overdue
+            ("Peter Brown - Roof Repair", -14, .completed, nil),
+            ("Sara Green - Fence Installation", -21, .archived, nil),
+            ("Mike Davis - Plumbing Fix", -1, .scheduled, 5),
         ]
 
-        for (clientName, daysOffset) in jobSpecs {
-            let job = Job(clientName: clientName)
-            if daysOffset != 0, let offsetDate = Calendar.current.date(byAdding: .day, value: daysOffset, to: Date()) {
-                job.createdDate = offsetDate
+        for (clientName, createdDaysAgo, status, dueDaysFromNow) in jobSpecs {
+            let dueDate = dueDaysFromNow.flatMap { cal.date(byAdding: .day, value: $0, to: now) }
+            let job = Job(clientName: clientName, dueDate: dueDate, status: status)
+            if let createdDate = cal.date(byAdding: .day, value: createdDaysAgo, to: now) {
+                job.createdDate = createdDate
             }
             context.insert(job)
 

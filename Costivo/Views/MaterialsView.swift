@@ -61,7 +61,7 @@ struct MaterialRow: View {
     @Query private var settings: [AppSettings]
     
     private var currency: String {
-        settings.currency
+        settings.currency.symbol
     }
     
     var body: some View {

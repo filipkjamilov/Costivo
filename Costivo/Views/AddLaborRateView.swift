@@ -12,7 +12,7 @@ struct AddLaborRateView: View {
     @State private var unit = ""
     
     private var currency: String {
-        settings.currency
+        settings.currency.symbol
     }
     
     var body: some View {

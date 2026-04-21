@@ -22,7 +22,7 @@ struct JobDetailView: View {
     }
     
     private var currency: String {
-        settings.currency
+        settings.currency.symbol
     }
     
     private var shareText: String {

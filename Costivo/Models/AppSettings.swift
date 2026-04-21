@@ -6,7 +6,7 @@ final class AppSettings {
     var preferredCurrency: String
     var handymanTypeRaw: String
 
-    init(preferredCurrency: String = "MKD", handymanType: HandymanType = .construction) {
+    init(preferredCurrency: String = Currency.default.rawValue, handymanType: HandymanType = .construction) {
         self.preferredCurrency = preferredCurrency
         self.handymanTypeRaw = handymanType.rawValue
     }
@@ -17,14 +17,15 @@ final class AppSettings {
     }
 
     /// Default values used when no settings exist yet
-    static let defaultCurrency = "MKD"
+    static let defaultCurrency = Currency.default.rawValue
     static let defaultHandymanType = HandymanType.construction
 }
 
 extension Array where Element == AppSettings {
     /// Single access point — returns the one AppSettings or provides defaults
-    var currency: String {
-        first?.preferredCurrency ?? AppSettings.defaultCurrency
+    var currency: Currency {
+        guard let raw = first?.preferredCurrency else { return .default }
+        return Currency(rawValue: raw) ?? .default
     }
 
     var handymanType: HandymanType {

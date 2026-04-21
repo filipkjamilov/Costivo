@@ -17,7 +17,7 @@ struct AddJobView: View {
     @State private var showingLaborPicker = false
     
     private var currency: String {
-        settings.currency
+        settings.currency.symbol
     }
     
     var body: some View {

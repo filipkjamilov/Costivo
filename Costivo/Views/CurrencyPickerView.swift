@@ -1,12 +1,12 @@
 import SwiftUI
 import SwiftData
 
-struct ProfessionPickerView: View {
+struct CurrencyPickerView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @Query private var settings: [AppSettings]
 
-    @State private var selected: HandymanType
+    @State private var selected: Currency
 
     var onComplete: (() -> Void)?
 
@@ -15,8 +15,8 @@ struct ProfessionPickerView: View {
         GridItem(.flexible())
     ]
 
-    init(current: HandymanType = .construction, onComplete: (() -> Void)? = nil) {
-        _selected = State(initialValue: current)
+    init(current: String = Currency.default.rawValue, onComplete: (() -> Void)? = nil) {
+        _selected = State(initialValue: Currency(rawValue: current) ?? .default)
         self.onComplete = onComplete
     }
 
@@ -27,7 +27,7 @@ struct ProfessionPickerView: View {
             } else {
                 NavigationStack {
                     content
-                        .navigationTitle(L(.profession))
+                        .navigationTitle(L(.currency))
                         .navigationBarTitleDisplayMode(.inline)
                         .toolbar {
                             ToolbarItem(placement: .confirmationAction) {
@@ -46,25 +46,26 @@ struct ProfessionPickerView: View {
         VStack(spacing: 24) {
             Spacer()
 
-            Text(L(.chooseProfession))
+            Text(L(.selectPreferredCurrency))
                 .font(.title2)
                 .fontWeight(.bold)
+                .multilineTextAlignment(.center)
 
-            Text(L(.professionDescription))
+            Text(L(.currencyDescription))
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 32)
 
             LazyVGrid(columns: columns, spacing: 12) {
-                ForEach(HandymanType.allCases, id: \.self) { type in
-                    ProfessionCard(
-                        type: type,
-                        isSelected: selected == type
+                ForEach(Currency.allCases, id: \.self) { currency in
+                    CurrencyCard(
+                        currency: currency,
+                        isSelected: selected == currency
                     )
                     .onTapGesture {
                         withAnimation(.easeInOut(duration: 0.2)) {
-                            selected = type
+                            selected = currency
                         }
                     }
                 }
@@ -73,7 +74,7 @@ struct ProfessionPickerView: View {
 
             Spacer()
 
-            TabBarPreview(handymanType: selected)
+            CurrencyPreview(currency: selected)
                 .padding(.horizontal, 24)
 
             if let onComplete {
@@ -100,33 +101,33 @@ struct ProfessionPickerView: View {
 
     private func save() {
         if let existingSettings = settings.first {
-            existingSettings.handymanType = selected
+            existingSettings.preferredCurrency = selected.rawValue
         } else {
-            let newSettings = AppSettings(handymanType: selected)
+            let newSettings = AppSettings(preferredCurrency: selected.rawValue)
             modelContext.insert(newSettings)
         }
     }
 }
 
-// MARK: - Profession Card
+// MARK: - Currency Card
 
-struct ProfessionCard: View {
-    let type: HandymanType
+struct CurrencyCard: View {
+    let currency: Currency
     let isSelected: Bool
 
     var body: some View {
-        VStack(spacing: 8) {
-            Image(systemName: type.jobsIcon)
-                .font(.system(size: 28))
+        VStack(spacing: 6) {
+            Text(currency.symbol)
+                .font(.system(size: 28, weight: .medium))
                 .foregroundStyle(isSelected ? .white : .primary)
 
-            Text(type.localizedName)
-                .font(.subheadline)
+            Text(currency.label)
+                .font(.caption)
                 .fontWeight(.medium)
-                .foregroundStyle(isSelected ? .white : .primary)
+                .foregroundStyle(isSelected ? .white.opacity(0.8) : .secondary)
         }
         .frame(maxWidth: .infinity)
-        .frame(height: 90)
+        .frame(height: 80)
         .background(
             RoundedRectangle(cornerRadius: 14)
                 .fill(isSelected ? Color.accentColor : Color(.secondarySystemGroupedBackground))
@@ -138,10 +139,10 @@ struct ProfessionCard: View {
     }
 }
 
-// MARK: - Tab Bar Preview
+// MARK: - Currency Preview
 
-struct TabBarPreview: View {
-    let handymanType: HandymanType
+struct CurrencyPreview: View {
+    let currency: Currency
 
     var body: some View {
         VStack(spacing: 8) {
@@ -150,35 +151,30 @@ struct TabBarPreview: View {
                 .foregroundStyle(.secondary)
                 .textCase(.uppercase)
 
-            HStack {
-                TabBarItem(icon: handymanType.jobsIcon, label: L(.jobs), isActive: true)
-                TabBarItem(icon: handymanType.materialsIcon, label: L(.materialsTitle), isActive: false)
-                TabBarItem(icon: handymanType.settingsIcon, label: L(.settings), isActive: false)
+            VStack(spacing: 4) {
+                previewRow(L(.materials), amount: "1,250.00")
+                previewRow(L(.labor), amount: "480.00")
+                Divider()
+                previewRow(L(.total), amount: "1,730.00", bold: true)
             }
-            .padding(.vertical, 10)
+            .padding(.vertical, 12)
             .padding(.horizontal, 16)
             .background(
-                RoundedRectangle(cornerRadius: 20)
+                RoundedRectangle(cornerRadius: 14)
                     .fill(.regularMaterial)
             )
         }
     }
-}
 
-struct TabBarItem: View {
-    let icon: String
-    let label: String
-    let isActive: Bool
-
-    var body: some View {
-        VStack(spacing: 4) {
-            Image(systemName: icon)
-                .font(.system(size: 20))
+    private func previewRow(_ label: String, amount: String, bold: Bool = false) -> some View {
+        HStack {
             Text(label)
-                .font(.caption2)
+                .font(bold ? .subheadline.bold() : .subheadline)
+            Spacer()
+            Text("\(currency.symbol) \(amount)")
+                .font(bold ? .subheadline.bold() : .subheadline)
+                .foregroundStyle(bold ? .primary : .secondary)
         }
-        .foregroundStyle(isActive ? Color.accentColor : .secondary)
-        .frame(maxWidth: .infinity)
     }
 }
 
@@ -191,7 +187,7 @@ struct TabBarItem: View {
         configurations: config
     )
 
-    return ProfessionPickerView()
+    return CurrencyPickerView()
         .modelContainer(container)
 }
 
@@ -202,6 +198,6 @@ struct TabBarItem: View {
         configurations: config
     )
 
-    return ProfessionPickerView(onComplete: {})
+    return CurrencyPickerView(onComplete: {})
         .modelContainer(container)
 }

@@ -10,7 +10,7 @@ struct EditLaborRateView: View {
     @State private var unit: String
     
     private var currency: String {
-        settings.currency
+        settings.currency.symbol
     }
     
     init(laborRate: LaborRate) {

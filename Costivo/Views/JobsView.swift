@@ -9,6 +9,7 @@ struct JobsView: View {
     @State private var selectedJob: Job?
     @State private var searchText = ""
     @State private var selectedFilter: JobFilter = .all
+    @State private var showCompletionAnimation = false
 
     private var filteredJobs: [Job] {
         let bySearch = searchText.isEmpty ? jobs : jobs.filter {
@@ -45,21 +46,22 @@ struct JobsView: View {
                                 } label: {
                                     Label(L(.markCompleted), systemImage: "arrow.uturn.backward")
                                 }
-                                .tint(.blue)
+                                .tint(.blueBold)
                             } else if job.status != .completed {
                                 Button {
                                     job.status = .completed
+                                    showCompletionAnimation = true
                                 } label: {
                                     Label(L(.markCompleted), systemImage: "checkmark.circle")
                                 }
-                                .tint(.green)
+                                .tint(.greenBase)
                             } else {
                                 Button {
                                     job.status = job.dueDate != nil ? .scheduled : .draft
                                 } label: {
                                     Label(L(.markScheduled), systemImage: "arrow.uturn.backward")
                                 }
-                                .tint(.blue)
+                                .tint(.blueBold)
                             }
                         }
                         .swipeActions(edge: .trailing) {
@@ -69,7 +71,7 @@ struct JobsView: View {
                                 } label: {
                                     Label(L(.archiveJob), systemImage: "archivebox")
                                 }
-                                .tint(.orange)
+                                .tint(.orangeBase)
                             }
                         }
                 }
@@ -128,6 +130,18 @@ struct JobsView: View {
                     )
                 }
             }
+            .overlay {
+                if showCompletionAnimation {
+                    AnimationView(.checkmark)
+                        .frame(width: 300, height: 300)
+                        .allowsHitTesting(false)
+                        .onAppear {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                                withAnimation { showCompletionAnimation = false }
+                            }
+                        }
+                }
+            }
         }
     }
     
@@ -144,14 +158,14 @@ struct JobRow: View {
     @Query private var settings: [AppSettings]
 
     private var currency: String {
-        settings.currency
+        settings.currency.symbol
     }
 
     var body: some View {
         HStack {
             if job.status == .completed {
                 Image(systemName: "checkmark.circle.fill")
-                    .foregroundStyle(.green)
+                    .foregroundStyle(Color.greenBase)
                     .font(.subheadline)
             }
 
@@ -173,7 +187,7 @@ struct JobRow: View {
                             Label(L(.overdue), systemImage: "exclamationmark.triangle.fill")
                                 .font(.caption)
                                 .fontWeight(.medium)
-                                .foregroundStyle(.red)
+                                .foregroundStyle(Color.redBold)
                         } else {
                             Label {
                                 Text(dueDate, format: .dateTime.month(.abbreviated).day())
@@ -183,7 +197,7 @@ struct JobRow: View {
                                 Image(systemName: "calendar")
                             }
                             .font(.caption)
-                            .foregroundStyle(job.status == .completed ? Color.secondary : Color.orange)
+                            .foregroundStyle(job.status == .completed ? Color.secondary : Color.orangeBase)
                         }
                     }
                 }

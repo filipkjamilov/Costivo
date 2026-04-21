@@ -36,6 +36,12 @@ struct DebugConsoleView: View {
                         clearAllData()
                         populateMessage = "All data cleared."
                     }
+
+                    Button("Reset UserDefaults (relaunch to see tutorial)", role: .destructive) {
+                        guard let bundleId = Bundle.main.bundleIdentifier else { return }
+                        UserDefaults.standard.removePersistentDomain(forName: bundleId)
+                        populateMessage = "UserDefaults cleared. Kill & relaunch the app."
+                    }
                 }
 
                 if let message = populateMessage {

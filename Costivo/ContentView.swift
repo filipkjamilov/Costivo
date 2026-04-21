@@ -11,24 +11,49 @@ import SwiftData
 struct ContentView: View {
     @Query private var settings: [AppSettings]
     @State private var showDebugConsole = false
+    @AppStorage("hasSeenTutorial") private var hasSeenTutorial = false
+    @AppStorage("hasPickedProfession") private var hasPickedProfession = false
+    @AppStorage("hasPickedCurrency") private var hasPickedCurrency = false
     private let isQABuild = ProcessInfo.processInfo.environment["IS_QA_BUILD"] == "YES"
 
     var body: some View {
-        TabView {
-            JobsView()
-                .tabItem {
-                    Label("Jobs", systemImage: settings.handymanType.jobsIcon)
+        Group {
+            if !hasSeenTutorial {
+                TutorialView {
+                    withAnimation {
+                        hasSeenTutorial = true
+                    }
                 }
+            } else if !hasPickedProfession {
+                ProfessionPickerView {
+                    withAnimation {
+                        hasPickedProfession = true
+                    }
+                }
+            } else if !hasPickedCurrency {
+                CurrencyPickerView {
+                    withAnimation {
+                        hasPickedCurrency = true
+                    }
+                }
+            } else {
+                TabView {
+                    JobsView()
+                        .tabItem {
+                            Label("Jobs", systemImage: settings.handymanType.jobsIcon)
+                        }
 
-            MaterialsView()
-                .tabItem {
-                    Label("Materials", systemImage: settings.handymanType.materialsIcon)
-                }
+                    MaterialsView()
+                        .tabItem {
+                            Label("Materials", systemImage: settings.handymanType.materialsIcon)
+                        }
 
-            SettingsView()
-                .tabItem {
-                    Label("Settings", systemImage: settings.handymanType.settingsIcon)
+                    SettingsView()
+                        .tabItem {
+                            Label("Settings", systemImage: settings.handymanType.settingsIcon)
+                        }
                 }
+            }
         }
         .sheet(isPresented: $showDebugConsole) {
             DebugConsoleView()

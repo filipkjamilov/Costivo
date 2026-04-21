@@ -12,7 +12,7 @@ struct AddMaterialView: View {
     @State private var showingPredefined = false
     
     private var currency: String {
-        settings.currency
+        settings.currency.symbol
     }
     
     var body: some View {

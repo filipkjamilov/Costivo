@@ -28,6 +28,16 @@
         }
       }
     },
+    "%@ %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ %2$@"
+          }
+        }
+      }
+    },
     "%@ %@%.2f" : {
       "localizations" : {
         "en" : {
@@ -59,6 +69,9 @@
           }
         }
       }
+    },
+    "%lld" : {
+
     },
     "•" : {
       "comment" : "A bullet point used in a list of suggested prices for predefined materials.",
@@ -207,6 +220,23 @@
     "App Info" : {
 
     },
+    "archiveJob" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Archive"
+          }
+        },
+        "mk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Архивирај"
+          }
+        }
+      }
+    },
     "cancel" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -346,6 +376,23 @@
         }
       }
     },
+    "continueButton" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continue"
+          }
+        },
+        "mk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Продолжи"
+          }
+        }
+      }
+    },
     "costEstimate" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -410,6 +457,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Валута"
+          }
+        }
+      }
+    },
+    "currencyDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All prices will be shown in this currency"
+          }
+        },
+        "mk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сите цени ќе бидат прикажани во оваа валута"
           }
         }
       }
@@ -528,23 +592,6 @@
         }
       }
     },
-    "noFilterResults" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No jobs match this filter"
-          }
-        },
-        "mk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Нема работи за овој филтер"
-          }
-        }
-      }
-    },
     "electrician" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -575,6 +622,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Сите"
+          }
+        }
+      }
+    },
+    "filterArchived" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Archived"
+          }
+        },
+        "mk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Архивирани"
           }
         }
       }
@@ -1029,6 +1093,23 @@
         }
       }
     },
+    "noFilterResults" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No jobs match this filter"
+          }
+        },
+        "mk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нема работи за овој филтер"
+          }
+        }
+      }
+    },
     "noJobs" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1342,6 +1423,9 @@
         }
       }
     },
+    "Reset UserDefaults (relaunch to see tutorial)" : {
+
+    },
     "save" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1533,6 +1617,23 @@
         }
       }
     },
+    "statusArchived" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Archived"
+          }
+        },
+        "mk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Архивирано"
+          }
+        }
+      }
+    },
     "statusCompleted" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1580,57 +1681,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Закажано"
-          }
-        }
-      }
-    },
-    "statusArchived" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Archived"
-          }
-        },
-        "mk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Архивирано"
-          }
-        }
-      }
-    },
-    "filterArchived" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Archived"
-          }
-        },
-        "mk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Архивирани"
-          }
-        }
-      }
-    },
-    "archiveJob" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Archive"
-          }
-        },
-        "mk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Архивирај"
           }
         }
       }
@@ -1733,6 +1783,74 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ВКУПНО:"
+          }
+        }
+      }
+    },
+    "tutorialGetStarted" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Get Started"
+          }
+        },
+        "mk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Започни"
+          }
+        }
+      }
+    },
+    "tutorialSlide1" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Built for every craftsman"
+          }
+        },
+        "mk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Создадено за секој мајстор"
+          }
+        }
+      }
+    },
+    "tutorialSlide2" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create estimates in minutes"
+          }
+        },
+        "mk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Направи понуда за неколку минути"
+          }
+        }
+      }
+    },
+    "tutorialSlide3" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Look professional. Get paid."
+          }
+        },
+        "mk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Изгледај професионално. Наплати."
           }
         }
       }

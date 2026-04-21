@@ -9,7 +9,7 @@ struct EditMaterialView: View {
     @State private var priceText: String
     
     private var currency: String {
-        settings.currency
+        settings.currency.symbol
     }
     
     init(material: Material) {

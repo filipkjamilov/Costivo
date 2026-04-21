@@ -26,7 +26,7 @@ struct LaborPickerView: View {
                         Spacer()
                         
                         Image(systemName: "plus.circle.fill")
-                            .foregroundStyle(.blue)
+                            .foregroundStyle(Color.blueBold)
                     }
                 }
             }

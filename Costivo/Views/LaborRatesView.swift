@@ -8,42 +8,40 @@ struct LaborRatesView: View {
     @State private var editingLabor: LaborRate?
     
     var body: some View {
-        NavigationStack {
-            List {
-                ForEach(laborRates) { labor in
-                    LaborRateRow(laborRate: labor)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            editingLabor = labor
-                        }
-                }
-                .onDelete(perform: deleteLaborRates)
-            }
-            .appBackground()
-            .navigationTitle(L(.laborRates))
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        showingAddLabor = true
-                    } label: {
-                        Image(systemName: "plus")
+        List {
+            ForEach(laborRates) { labor in
+                LaborRateRow(laborRate: labor)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        editingLabor = labor
                     }
+            }
+            .onDelete(perform: deleteLaborRates)
+        }
+        .appBackground()
+        .navigationTitle(L(.laborRates))
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    showingAddLabor = true
+                } label: {
+                    Image(systemName: "plus")
                 }
             }
-            .sheet(isPresented: $showingAddLabor) {
-                AddLaborRateView()
-            }
-            .sheet(item: $editingLabor) { labor in
-                EditLaborRateView(laborRate: labor)
-            }
-            .overlay {
-                if laborRates.isEmpty {
-                    ContentUnavailableView(
-                        L(.noLaborRates),
-                        systemImage: "wrench.and.screwdriver",
-                        description: Text(L(.addFirstLaborRate))
-                    )
-                }
+        }
+        .sheet(isPresented: $showingAddLabor) {
+            AddLaborRateView()
+        }
+        .sheet(item: $editingLabor) { labor in
+            EditLaborRateView(laborRate: labor)
+        }
+        .overlay {
+            if laborRates.isEmpty {
+                ContentUnavailableView(
+                    L(.noLaborRates),
+                    systemImage: "wrench.and.screwdriver",
+                    description: Text(L(.addFirstLaborRate))
+                )
             }
         }
     }
@@ -60,7 +58,7 @@ struct LaborRateRow: View {
     @Query private var settings: [AppSettings]
     
     private var currency: String {
-        settings.currency
+        settings.currency.symbol
     }
     
     var body: some View {

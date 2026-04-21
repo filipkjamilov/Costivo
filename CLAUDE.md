@@ -7,29 +7,46 @@ Costivo is a practical iOS app designed for craftsmen and construction professio
 
 ## Core Problem Solved
 Most craftsmen use manual methods (paper, Excel, calculator, WhatsApp notes) for creating quotes. Costivo provides:
-- ✔️ Faster quotes
-- ✔️ Less mistakes
-- ✔️ Professional look
-- ✔️ Saved history
-- ✔️ More control over profit
+- Faster quotes
+- Less mistakes
+- Professional look
+- Saved history
+- More control over profit
 
 ## App Architecture
 
 ### Technology Stack
 - **Framework**: SwiftUI
 - **Data Persistence**: SwiftData
+- **Animations**: Lottie (via SPM, static target only — NOT `Lottie-Dynamic`)
 - **Platform**: iOS
 - **Language**: Swift
 
 ### Navigation Structure
-Tab-based navigation with 3 main sections (MVP-focused):
+Tab-based navigation with 3 main sections:
 1. **Jobs Tab** (Main Screen) - Create and manage client estimates - "Where users live"
 2. **Materials Tab** - Manage materials price database
-3. **Settings Tab** - Currency preferences & Labor rates management
+3. **Settings Tab** - Currency, profession, labor rates management
 
-## Core Features (MVP - Version 1)
+### Onboarding Flow
+First-time users see a 3-step onboarding before the main app:
+1. **Tutorial movie** — 3 auto-playing Lottie animation slides with text (non-interactive until finished)
+2. **Profession picker** — select trade (construction, plumber, electrician, etc.)
+3. **Currency picker** — select preferred currency with live preview
 
-### 1️⃣ Jobs (Main Screen - First Tab)
+Onboarding state is stored in `@AppStorage` (UserDefaults), NOT SwiftData — no schema changes needed.
+- `hasSeenTutorial`, `hasPickedProfession`, `hasPickedCurrency`
+
+### Dual-Mode View Pattern
+`ProfessionPickerView` and `CurrencyPickerView` both support two modes via an optional `onComplete` closure:
+- **Onboarding mode** (`onComplete` provided): Full-screen layout with "Continue" button, no navigation bar
+- **Settings mode** (`onComplete` is `nil`): Wrapped in `NavigationStack` with "Done" toolbar button and `dismiss()`
+
+This avoids duplicating views. When adding similar picker views, follow the same pattern.
+
+## Core Features
+
+### Jobs (Main Screen - First Tab)
 **Purpose**: "Where users live" - This is the primary workspace for daily work.
 
 For each client, users can:
@@ -37,75 +54,34 @@ For each client, users can:
 - Select materials from their library
 - Enter quantities for each material
 - Add labor charges
+- Set optional due date
 - View automatic total calculation in real-time
 
-**Calculation Example**:
-```
-Job for "Client XYZ":
-- Concrete: 2 m³ × €20 = €40
-- Labor: 5h × €25 = €125
-─────────────────────────────
-Total: €165
-```
+**Job Status Tracking**:
+- Draft (default for new jobs)
+- Scheduled (auto-set when due date is added)
+- Completed (via swipe action)
+- Archived (via swipe action on completed jobs)
 
-**Features**:
-- Create new job estimates
-- Save jobs with client name
-- View all jobs with totals
-- Edit existing jobs (modify quantities, add/remove items)
-- Delete jobs
-- Minimal job details (client name, materials, labor, total, date)
+**Filtering**: Toolbar menu with filters: All, Upcoming, Overdue, Completed, Archived
 
-**This tab is optimized for**:
-- Speed: Quick job creation
-- Simplicity: Focus on "my work today"
-- Clarity: Instant total calculation
-
-### 2️⃣ Materials (Second Tab)
+### Materials (Second Tab)
 **Purpose**: Price database that saves time long-term.
 
 Users can create their own materials library with:
-- Material name (e.g., "Concrete", "Tiles", "Pipe", "Silicone")
+- Material name
 - Price per unit
-- Unit type selection:
-  - **Length**: mm / cm / m / km
-  - **Area**: m²
-  - **Volume**: m³
-  - **Per item**: piece
+- Unit type (mm, cm, m, km, m², m³, piece)
 
-**Features**:
-- Add new materials
-- Edit existing materials
-- Delete materials
-- View all materials in a list
+Also includes predefined common materials for quick-add.
 
-**Example Materials**:
-- Concrete → €20 / m³
-- Tiles → €15 / m²
-- Pipe → €3 / meter
-- Silicone → €5 / piece
-
-### 3️⃣ Settings (Third Tab)
+### Settings (Third Tab)
 **Purpose**: Preferences and labor rate management.
 
-**Currency Preferences**:
-- Choose preferred currency (€, $, £, ¥, CHF, SEK, NOK, DKK)
-- Auto-saves on change
-- All prices display in selected currency throughout the app
-
-**Labor Rates Management** (integrated into Settings):
-- Define different labor pricing models:
-  - **Hourly rate** → €25/hour
-  - **Fixed price** → €200/job
-  - **Per unit** → €5/m² install
-- Add/Edit/Delete labor rates
-- Support multiple pricing models
-
-**Why labor rates are in Settings**:
-- Less frequently modified than materials
-- Keeps main tabs focused on daily work
-- Reduces tab clutter for MVP
-- Easy to access when needed
+- **Currency**: Opens `CurrencyPickerView` as a sheet ($, €, RSD, MKD) — managed by `Currency` enum
+- **Profession**: Opens `ProfessionPickerView` as a sheet
+- **Labor Rates**: NavigationLink pushes to `LaborRatesView` with full CRUD (hourly, fixed, per unit)
+- **Feedback**: Link to feedback form
 
 ## Data Models
 
@@ -113,15 +89,14 @@ Users can create their own materials library with:
 - id: UUID
 - name: String
 - pricePerUnit: Double
-- unitType: UnitType enum
-- specificUnit: String (e.g., "m", "m²", "piece")
+- unit: String
 
 ### Labor Rate
 - id: UUID
 - name: String
 - price: Double
-- pricingModel: PricingModel enum (hourly, fixed, perUnit)
-- unit: String? (for perUnit model)
+- pricingModelRaw: String (computed `pricingModel: PricingModel`)
+- unit: String?
 
 ### Job
 - id: UUID
@@ -130,19 +105,26 @@ Users can create their own materials library with:
 - laborEntries: [JobLabor] (labor reference + quantity)
 - totalCost: Double (calculated)
 - createdDate: Date
+- dueDate: Date? (optional)
+- statusRaw: String = "draft" (computed `status: JobStatus`)
 
-### User Settings
-- preferredCurrency: String
+### AppSettings
+- preferredCurrency: String (raw value from `Currency` enum, default `"$"`)
+- handymanTypeRaw: String (computed `handymanType: HandymanType`)
+- Access via `[AppSettings]` extension: `settings.currency` returns `Currency`, `settings.handymanType` returns `HandymanType`
 
-## Future Features (Post-MVP)
-- Job status tracking (draft, sent, completed)
-- Date filtering for jobs
-- PDF/email quote generation
-- Invoice generation
-- Job templates
-- Photo attachments
-- Tax calculations
-- Profit margin tracking
+### Enums (separate files)
+- `Currency`: usd ($), eur (€), rsd (RSD), mkd (MKD) — has `.symbol`, `.label`, `.default`
+- `JobStatus`: draft, scheduled, completed, archived
+- `HandymanType`: construction, plumber, electrician, painter, carpenter, tiler
+- `PricingModel`: hourly, fixed, perUnit
+- `UnitType`: length, area, volume, perItem
+
+### Currency Rules
+- All currency logic lives in `Models/Currency.swift` — never hardcode "$", "€", "MKD", etc. in views
+- Views access `settings.currency.symbol` for display (e.g., "$", "ден")
+- SwiftData stores the raw string (`Currency.rawValue`); the `[AppSettings].currency` extension returns the typed enum
+- To add a new currency, add a case to `Currency` — the picker, preview, and all views update automatically
 
 ## Development Guidelines
 
@@ -154,49 +136,95 @@ Users can create their own materials library with:
 - Simple, focused implementations
 
 ### Key Principles
-- **Keep it simple**: MVP focuses on core functionality only
-- **No over-engineering**: Direct solutions, no premature abstractions
+- **Keep it simple**: Direct solutions, no premature abstractions
 - **User-centric**: Fast, intuitive interface for busy craftsmen
 - **Data integrity**: SwiftData for reliable local storage
+- **No data loss**: All schema changes must be safe lightweight migrations
 
-## Project Status
-✅ **MVP Complete** - Version 1.0 Ready
+### Color Palette (MANDATORY)
+**All colors in the app MUST come from the `AppColor` enum** in `Views/AppColor.swift`. Never use raw hex values, `Color.red`, `Color.blue`, `.green`, `.orange`, or any other system/hardcoded color directly.
 
-### Current Implementation Status
-- ✅ SwiftData models implemented
-- ✅ Jobs tab (main screen) with full CRUD
-- ✅ Materials tab with full CRUD
-- ✅ Settings tab with currency selection
-- ✅ Labor rates management in Settings
-- ✅ Real-time total calculation
-- ✅ Tab-based navigation (3 tabs)
-- ✅ All data persists locally with SwiftData
+Usage: `.tint(.orangeBase)`, `.foregroundStyle(.redBold)` — Color extensions allow direct use in SwiftUI modifiers.
 
-### App Structure
+| Group | Soft | Light | Muted | Base | Bold/Deep |
+|---|---|---|---|---|---|
+| **Yellow (Brand)** | `yellowSoft` | `yellowLight` | `yellowMuted` | `yellowBase` | `yellowDeep` |
+| **Grey** | `greySoft` | `greyLight` | `greyMuted` | `greyBase` | `greyDark` / `greyDeep` |
+| **Green (Success)** | `greenSoft` | `greenLight` | — | `greenBase` | `greenBold` / `greenDeep` |
+| **Red (Attention)** | `redSoft` | `redLight` | — | `redBase` | `redBold` / `redDeep` |
+| **Blue (Info)** | `blueSoft` | `blueLight` | — | `blueBase` | `blueBold` / `blueDeep` |
+| **Orange (Warning)** | `orangeSoft` | `orangeLight` | — | `orangeBase` | `orangeBold` / `orangeDeep` |
+
+**Naming convention:** soft (lightest bg) → light → muted → base (primary) → bold → deep (darkest).
+
+**Dark/Light mode gradient** is handled by `AppColor.gradientTop/Mid/Bottom(for:)` — dark mode uses greyBase→greyDark→greyDeep, light mode uses yellowLight→yellowMuted→greySoft.
+
+**Rules:**
+- Use `Color` extensions for SwiftUI modifiers: `.tint(.blueBold)`, `.foregroundStyle(.greenBase)`
+- For Lottie animation customization, reference `AppColor` hex strings via `.rawValue`
+- System semantic colors (`.primary`, `.secondary`) are OK for text — they adapt to dark mode natively
+- `Color.accentColor` is OK for interactive elements that should follow the app's accent color
+- `Color.clear` and `Color(.secondarySystemGroupedBackground)` are OK for system-level transparency and backgrounds
+
+### Lottie Animations
+- All animation JSON files go in `Costivo/Animations/`
+- Enum cases in `AppAnimation` must match JSON filenames exactly (no `.json` extension)
+- `AnimationView` wraps Lottie — consumers use `loops: Bool` parameter, never import Lottie directly
+- Only import `Lottie` in `AnimationView.swift` — keep Lottie types out of all other files
+
+### Localization
+- All user-facing strings use `L(.keyName)` via `LocalizationService`
+- Keys are defined in `LocalizationKey` enum in `Services/LocalizationService.swift`
+- Translations in `Localizable.xcstrings` with `extractionState: "manual"`
+- Supported languages: English (en), Macedonian (mk)
+
+## App Structure
 ```
 Costivo/
+├── Animations/
+│   ├── builders.json
+│   ├── checkmark.json
+│   ├── paymentHero.json
+│   └── usingMobilePhone.json
 ├── Models/
-│   ├── Material.swift
-│   ├── LaborRate.swift
-│   ├── Job.swift
-│   ├── JobMaterial.swift
-│   ├── JobLabor.swift
 │   ├── AppSettings.swift
-│   ├── UnitType.swift
-│   └── PricingModel.swift
+│   ├── Currency.swift
+│   ├── HandymanType.swift
+│   ├── Job.swift
+│   ├── JobStatus.swift
+│   ├── LaborRate.swift
+│   ├── Material.swift
+│   ├── PredefinedMaterial.swift
+│   ├── PricingModel.swift
+│   └── UnitType.swift
+├── Services/
+│   ├── JobShareService.swift
+│   ├── LocalizationService.swift
+│   ├── SeedData.swift
+│   └── ShakeDetector.swift
 ├── Views/
-│   ├── JobsView.swift (Main screen)
 │   ├── AddJobView.swift
-│   ├── JobDetailView.swift
-│   ├── MaterialsView.swift
-│   ├── AddMaterialView.swift
-│   ├── EditMaterialView.swift
-│   ├── MaterialPickerView.swift
-│   ├── LaborPickerView.swift
-│   ├── SettingsView.swift
 │   ├── AddLaborRateView.swift
-│   └── EditLaborRateView.swift
-├── ContentView.swift (Tab navigation)
+│   ├── AddMaterialView.swift
+│   ├── AnimationView.swift (Lottie wrapper)
+│   ├── AppColor.swift (Color palette)
+│   ├── CurrencyPickerView.swift (Dual-mode: onboarding + settings)
+│   ├── DebugConsoleView.swift
+│   ├── EditLaborRateView.swift
+│   ├── EditMaterialView.swift
+│   ├── JobDetailView.swift
+│   ├── JobsView.swift (Main screen)
+│   ├── LaborPickerView.swift
+│   ├── LaborRatesView.swift
+│   ├── MaterialPickerView.swift
+│   ├── MaterialsView.swift
+│   ├── PredefinedMaterialsView.swift
+│   ├── ProfessionPickerView.swift (Dual-mode: onboarding + settings)
+│   ├── SettingsView.swift
+│   ├── ShareSheet.swift
+│   ├── Theme.swift (.appBackground() modifier)
+│   └── TutorialView.swift (Auto-playing onboarding movie)
+├── ContentView.swift (Onboarding gate + Tab navigation)
 └── CostivoApp.swift (Entry point with SwiftData setup)
 ```
 
@@ -204,45 +232,27 @@ Costivo/
 
 ### SwiftData Schema Migration in Previews
 
-**Problem**: After changing the Material model schema (from `unitTypeRaw` + `specificUnit` to just `unit`), Xcode previews stopped working. Materials could not be saved in previews even though the app worked fine in the simulator.
+**Problem**: After changing model schemas, Xcode previews cache the old schema and fail.
 
-**Root Cause**:
-- SwiftData previews were caching the old schema in memory
-- The old schema had: `unitTypeRaw: String` and `specificUnit: String`
-- The new schema has: `unit: String`
-- Previews were trying to use the new model with old cached data
-
-**Solution**:
-Updated all preview configurations to use explicit in-memory containers:
-
+**Solution**: All previews use `ModelConfiguration(isStoredInMemoryOnly: true)`:
 ```swift
-#Preview("English") {
+#Preview {
     let config = ModelConfiguration(isStoredInMemoryOnly: true)
     let container = try! ModelContainer(
-        for: Material.self, LaborRate.self, Job.self, AppSettings.self,
+        for: Material.self, LaborRate.self, Job.self, JobMaterial.self, JobLabor.self, AppSettings.self,
         configurations: config
     )
-
-    return MaterialsView()
+    return SomeView()
         .modelContainer(container)
-        .environment(\.locale, Locale(identifier: "en"))
 }
 ```
 
-**Why This Works**:
-- `ModelConfiguration(isStoredInMemoryOnly: true)` creates a fresh database every time
-- No stale schema data persists between preview reloads
-- Each preview starts with the current model schema
-
-**Files Updated**:
-- `Costivo/Views/MaterialsView.swift` (lines 81-100)
-- `Costivo/Views/AddMaterialView.swift` (lines 89-108)
-- `Costivo/ContentView.swift` (lines 32-51)
-
 **Prevention**:
-- Always use `ModelConfiguration(isStoredInMemoryOnly: true)` for previews
+- Always use in-memory containers for previews
 - When changing @Model schemas, restart Xcode or clean build folder
-- For the actual app, schema changes must be safe lightweight migrations (see SwiftData Schema Migration rules) — never delete user data
+
+### Lottie UIViewRepresentable Steals Touches
+Lottie's SwiftUI wrapper uses a UIKit view that intercepts touch events. `allowsHitTesting(false)` on the SwiftUI level may not work on the animation itself. Solution: put interactive elements (buttons) in a separate overlay ZStack layer on top of the animation content, or apply `.allowsHitTesting(false)` to the entire content VStack and overlay the button separately.
 
 ## Agent Architecture Rules
 
@@ -251,6 +261,8 @@ These rules are mandatory. The agent must follow them when writing or modifying 
 ### File Placement
 - All `@Model` classes → `Costivo/Models/`
 - All SwiftUI views → `Costivo/Views/`
+- Animation JSON files → `Costivo/Animations/`
+- Services → `Costivo/Services/`
 - No new directories unless explicitly approved
 - One type per file; filename must match the type name exactly
 
@@ -264,6 +276,11 @@ These rules are mandatory. The agent must follow them when writing or modifying 
 2. Follow existing naming pattern: list views end in `View`, add/edit sheets end in `AddXView` / `EditXView`, pickers end in `PickerView`
 3. Every new view file must include a `#Preview` using an in-memory `ModelContainer` (see Known Issues & Solutions)
 4. Inject the model context via `@Environment(\.modelContext)` — do not pass it as a parameter
+
+### Adding a New Animation
+1. Add the JSON file to `Costivo/Animations/`
+2. Add a case to `AppAnimation` enum in `AnimationView.swift` — the raw value must match the filename exactly
+3. Use `AnimationView(.caseName, loops: true/false)` in views — never import Lottie outside `AnimationView.swift`
 
 ### SwiftData Rules
 - Never use `try!` except inside `#Preview` blocks
@@ -282,7 +299,9 @@ These rules are mandatory. The agent must follow them when writing or modifying 
 ### SwiftUI Patterns
 - Use `@State` for local view state, `@Bindable` for SwiftData model editing
 - Sheets and navigation pushes are the only two navigation patterns — no custom routers
-- Currency symbol is always read from `AppSettings` via `@Query` — never hardcode `€` or any symbol
+- Currency is always accessed via `settings.currency` (returns `Currency` enum) — use `.symbol` for display, never hardcode "$", "€", etc.
+- Use `@AppStorage` for lightweight boolean flags (onboarding state, feature flags) — NOT SwiftData
+- Use `[AppSettings]` array extension for convenience access: `settings.currency`, `settings.handymanType`
 
 ### What the Agent Must NOT Do
 - Do not add Combine, ObservableObject, or `@Published` — use SwiftData + `@State`/`@Bindable`
@@ -290,6 +309,8 @@ These rules are mandatory. The agent must follow them when writing or modifying 
 - Do not add a 4th tab without explicit instruction
 - Do not change the SwiftData schema (add/remove/rename stored properties) without warning the user about migration risk
 - Do not use `async/await` for SwiftData operations — SwiftData on main actor is synchronous
+- Do not import Lottie outside of `AnimationView.swift`
+- Do not duplicate views — use the dual-mode pattern (optional `onComplete` closure) when a view is needed in both onboarding and settings
 
 ## Contact
 User: MR
