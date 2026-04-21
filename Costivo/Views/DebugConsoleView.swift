@@ -37,10 +37,12 @@ struct DebugConsoleView: View {
                         populateMessage = "All data cleared."
                     }
 
-                    Button("Reset UserDefaults (relaunch to see tutorial)", role: .destructive) {
+                    Button("Full Reset (UserDefaults + SwiftData)", role: .destructive) {
+                        clearAllData()
+                        clearSettings()
                         guard let bundleId = Bundle.main.bundleIdentifier else { return }
                         UserDefaults.standard.removePersistentDomain(forName: bundleId)
-                        populateMessage = "UserDefaults cleared. Kill & relaunch the app."
+                        populateMessage = "Everything cleared. Kill & relaunch the app."
                     }
                 }
 
@@ -86,6 +88,12 @@ struct DebugConsoleView: View {
         let fetchedLaborRates = (try? modelContext.fetch(FetchDescriptor<LaborRate>())) ?? []
         fetchedLaborRates.forEach { modelContext.delete($0) }
 
+        try? modelContext.save()
+    }
+
+    private func clearSettings() {
+        let settings = (try? modelContext.fetch(FetchDescriptor<AppSettings>())) ?? []
+        settings.forEach { modelContext.delete($0) }
         try? modelContext.save()
     }
 

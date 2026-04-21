@@ -128,6 +128,11 @@ enum LocalizationKey: String, CaseIterable {
     case noFilterResults
 
     // MARK: - Tutorial
+    case profileTitle
+    case profileDescription
+    case profileNotSet
+    case handymanNamePlaceholder
+    case companyNamePlaceholder
     case continueButton
     case currencyDescription
 

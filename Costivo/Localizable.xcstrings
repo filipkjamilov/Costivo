@@ -359,6 +359,23 @@
         }
       }
     },
+    "companyNamePlaceholder" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Company name (optional)"
+          }
+        },
+        "mk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Име на фирма (опционално)"
+          }
+        }
+      }
+    },
     "construction" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -694,6 +711,9 @@
         }
       }
     },
+    "Full Reset (UserDefaults + SwiftData)" : {
+
+    },
     "generatedByCostivo" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -707,6 +727,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Генерирано од Costivo"
+          }
+        }
+      }
+    },
+    "handymanNamePlaceholder" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your full name"
+          }
+        },
+        "mk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вашето целосно име"
           }
         }
       }
@@ -1389,6 +1426,57 @@
         }
       }
     },
+    "profileDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This appears on estimates you share with clients"
+          }
+        },
+        "mk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ова се прикажува на понудите што ги споделувате со клиенти"
+          }
+        }
+      }
+    },
+    "profileNotSet" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add your name"
+          }
+        },
+        "mk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Додајте го вашето име"
+          }
+        }
+      }
+    },
+    "profileTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your Profile"
+          }
+        },
+        "mk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вашиот Профил"
+          }
+        }
+      }
+    },
     "quantity" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1422,9 +1510,6 @@
           }
         }
       }
-    },
-    "Reset UserDefaults (relaunch to see tutorial)" : {
-
     },
     "save" : {
       "extractionState" : "manual",

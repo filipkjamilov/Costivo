@@ -5,6 +5,8 @@ import SwiftData
 final class AppSettings {
     var preferredCurrency: String
     var handymanTypeRaw: String
+    var handymanName: String?
+    var businessName: String?
 
     init(preferredCurrency: String = Currency.default.rawValue, handymanType: HandymanType = .construction) {
         self.preferredCurrency = preferredCurrency
@@ -30,5 +32,13 @@ extension Array where Element == AppSettings {
 
     var handymanType: HandymanType {
         first?.handymanType ?? AppSettings.defaultHandymanType
+    }
+
+    var handymanName: String? {
+        first?.handymanName
+    }
+
+    var businessName: String? {
+        first?.businessName
     }
 }

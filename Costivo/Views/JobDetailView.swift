@@ -26,7 +26,7 @@ struct JobDetailView: View {
     }
     
     private var shareText: String {
-        JobShareService.formatJobForSharing(job: job, currency: currency)
+        JobShareService.formatJobForSharing(job: job, currency: currency, handymanName: settings.handymanName, businessName: settings.businessName)
     }
     
     private var shareTitle: String {

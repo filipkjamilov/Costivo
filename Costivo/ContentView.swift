@@ -11,32 +11,12 @@ import SwiftData
 struct ContentView: View {
     @Query private var settings: [AppSettings]
     @State private var showDebugConsole = false
-    @AppStorage("hasSeenTutorial") private var hasSeenTutorial = false
-    @AppStorage("hasPickedProfession") private var hasPickedProfession = false
+    @State private var onboardingComplete = false
     @AppStorage("hasPickedCurrency") private var hasPickedCurrency = false
-    private let isQABuild = ProcessInfo.processInfo.environment["IS_QA_BUILD"] == "YES"
 
     var body: some View {
         Group {
-            if !hasSeenTutorial {
-                TutorialView {
-                    withAnimation {
-                        hasSeenTutorial = true
-                    }
-                }
-            } else if !hasPickedProfession {
-                ProfessionPickerView {
-                    withAnimation {
-                        hasPickedProfession = true
-                    }
-                }
-            } else if !hasPickedCurrency {
-                CurrencyPickerView {
-                    withAnimation {
-                        hasPickedCurrency = true
-                    }
-                }
-            } else {
+            if hasPickedCurrency || onboardingComplete {
                 TabView {
                     JobsView()
                         .tabItem {
@@ -53,16 +33,20 @@ struct ContentView: View {
                             Label("Settings", systemImage: settings.handymanType.settingsIcon)
                         }
                 }
+            } else {
+                OnboardingView {
+                    onboardingComplete = true
+                }
             }
         }
         .sheet(isPresented: $showDebugConsole) {
             DebugConsoleView()
         }
+        #if DEBUG || QA_BUILD
         .onReceive(NotificationCenter.default.publisher(for: .deviceDidShake)) { _ in
-            if isQABuild {
-                showDebugConsole = true
-            }
+            showDebugConsole = true
         }
+        #endif
     }
 }
 

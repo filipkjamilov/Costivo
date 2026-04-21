@@ -2,19 +2,29 @@ import Foundation
 
 struct JobShareService {
     /// Formats a job into a shareable text format
-    static func formatJobForSharing(job: Job, currency: String) -> String {
+    static func formatJobForSharing(job: Job, currency: String, handymanName: String? = nil, businessName: String? = nil) -> String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .medium
         dateFormatter.timeStyle = .none
-        
+
         var text = """
         ━━━━━━━━━━━━━━━━━━━━━━━━━━
         📋 \(L(.costEstimate))
         ━━━━━━━━━━━━━━━━━━━━━━━━━━
-        
+
+        """
+
+        if let handymanName, !handymanName.isEmpty {
+            text += "\(handymanName)\n"
+        }
+        if let businessName, !businessName.isEmpty {
+            text += "\(businessName)\n"
+        }
+
+        text += """
         \(L(.client)): \(job.clientName)
         \(L(.date)): \(dateFormatter.string(from: job.createdDate))
-        
+
         """
         
         // Materials section
