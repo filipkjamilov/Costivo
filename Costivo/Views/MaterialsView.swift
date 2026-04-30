@@ -94,7 +94,7 @@ struct MaterialRow: View {
         for: Material.self, LaborRate.self, Job.self, AppSettings.self,
         configurations: config
     )
-    
+
     return MaterialsView()
         .modelContainer(container)
         .environment(\.locale, Locale(identifier: "en"))

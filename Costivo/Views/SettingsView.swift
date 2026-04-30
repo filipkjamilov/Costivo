@@ -141,6 +141,11 @@ struct SettingsView: View {
                                 .foregroundStyle(Color.yellowBase)
                         }
                     }
+                    Link(L(.termsOfUse), destination: URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stddla/")!)
+                        .font(.subheadline)
+
+                    Link(L(.privacyPolicy), destination: URL(string: "https://filipkjamilov.com/CostivoWeb/privacy-policy.html")!)
+                        .font(.subheadline)
                 } header: {
                     Text(L(.subscriptionSection))
                 }

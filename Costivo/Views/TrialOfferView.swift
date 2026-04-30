@@ -66,6 +66,14 @@ struct TrialOfferView: View {
                         .font(.caption)
                         .foregroundStyle(.tertiary)
                         .multilineTextAlignment(.center)
+
+                    HStack(spacing: 4) {
+                        Link(L(.termsOfUse), destination: URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stddla/")!)
+                        Text("·").foregroundStyle(.tertiary)
+                        Link(L(.privacyPolicy), destination: URL(string: "https://filipkjamilov.com/CostivoWeb/privacy-policy.html")!)
+                    }
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
                 }
                 .padding(.horizontal, 28)
                 .padding(.bottom, 44)

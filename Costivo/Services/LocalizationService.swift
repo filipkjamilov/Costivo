@@ -178,6 +178,10 @@ enum LocalizationKey: String, CaseIterable {
     case trialOfferFeature4
     case trialOfferSeePricing
     case trialOfferDisclaimer
+
+    // MARK: - Legal
+    case termsOfUse
+    case privacyPolicy
 }
 
 // MARK: - Localization Protocol
