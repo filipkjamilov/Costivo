@@ -5,6 +5,16 @@ Costivo is a practical iOS app designed for craftsmen and construction professio
 
 ## User: MR
 
+## Contact
+- Support email: appcostivo@gmail.com
+- App Store: https://apps.apple.com/app/id6758861678
+- Website / Privacy Policy: https://filipkjamilov.com/CostivoWeb/
+- Privacy Policy URL: https://filipkjamilov.com/CostivoWeb/privacy-policy.html
+
+## Current Version
+- Marketing version: 2.0.0
+- Build number: 5
+
 ## Core Problem Solved
 Most craftsmen use manual methods (paper, Excel, calculator, WhatsApp notes) for creating quotes. Costivo provides:
 - Faster quotes
@@ -30,19 +40,22 @@ Tab-based navigation with 3 main sections:
 3. **Settings Tab** - Currency, profession, labor rates management
 
 ### Onboarding Flow
-First-time users see a 5-step onboarding before the main app, managed by `OnboardingView`:
+First-time users see a 5-step onboarding + trial offer before the main app, managed by `OnboardingView`:
 1. **Tutorial movie** — 3 auto-playing Lottie animation slides with text (non-interactive until finished)
 2. **Business profile** — handyman name + optional company name with avatar circle showing initials
 3. **Profession picker** — select trade (construction, plumber, electrician, etc.)
 4. **Currency picker** — select preferred currency with live preview
 5. **Feature walkthrough** — 4-page animated walkthrough showing materials/labor, job creation, swipe-to-complete, and swipe-to-archive with mock UI demos
+6. **TrialOfferView** — shown after walkthrough as a fullScreenCover; user starts free trial or sees pricing
 
 Onboarding logic lives in `OnboardingView.swift` — `ContentView` delegates to it and only shows the TabView once complete.
 
 Onboarding state is stored in `@AppStorage` (UserDefaults), NOT SwiftData — no schema changes needed.
 - `hasSeenTutorial`, `hasSetProfile`, `hasPickedProfession`, `hasPickedCurrency`, `hasSeenWalkthrough`
 
-**Backward compatibility**: `ContentView` uses `.onAppear` to auto-set `hasSeenWalkthrough = true` for existing users who already have `hasPickedCurrency = true`, so they skip the walkthrough.
+**Critical timing detail**: `hasSeenWalkthrough` is NOT set when the walkthrough ends — it is set only when `TrialOfferView.onComplete` fires. This keeps `OnboardingView` in the hierarchy so the `fullScreenCover` can present over it. Setting it too early causes `ContentView` to remove `OnboardingView` before the cover can appear.
+
+**Backward compatibility**: `ContentView` uses `.onAppear` to auto-set `hasSeenWalkthrough = true` for existing users who already have `hasPickedCurrency = true`, so they skip the walkthrough. Existing users also get `startTrial()` called in `ContentView.onAppear` → fresh 30-day trial from update date.
 
 ### Dual-Mode View Pattern
 `BusinessProfileView`, `ProfessionPickerView`, and `CurrencyPickerView` all support two modes via an optional `onComplete` closure:
@@ -93,7 +106,7 @@ Also includes predefined common materials for quick-add.
 - **Feedback**: Link to feedback form
 
 ### Subscription System
-**Model**: Free download → 14-day local trial → Paid subscription (annual $29.99/year or lifetime $99.99)
+**Model**: Free download → 30-day local trial (no card required) → Paid subscription (annual $29.99/year or lifetime $99.99)
 
 **Products** (App Store Connect + RevenueCat):
 - `costivo_pro_yearly` — Auto-Renewable Subscription, $29.99/year
@@ -105,18 +118,20 @@ Also includes predefined common materials for quick-add.
 - Entitlement: `"Costivo Pro"` (`entl6dfd2738d4`)
 - Offering: `default` (`ofrng5021cc0e01`) — packages `$rc_annual` + `$rc_lifetime`
 - Live SDK key: `appl_VvvheQvFCULLTnORFHMqmdUVXCF` (in `SubscriptionManager.apiKey`)
+- App Store Connect API key configured in RC dashboard (Key ID: S4YS22BM8X)
 
 **Architecture**:
 - **RevenueCat SDK** handles all purchase logic, receipt validation, and entitlement management
 - **`SubscriptionManager`** (`@Observable @MainActor`) — central service injected via `.environment()` from `CostivoApp`
 - **Entitlement ID**: `"Costivo Pro"` — checked via `Purchases.shared.customerInfo()`
-- **Local trial**: 14-day trial tracked via UserDefaults (`subscriptionTrialStartDate`), independent of StoreKit
+- **Local trial**: 30-day trial tracked via UserDefaults (`subscriptionTrialStartDate`), independent of StoreKit
 - **No SwiftData changes** — subscription state comes from RevenueCat + UserDefaults only
+- **Single API key**: Always uses the live key `appl_VvvheQvFCULLTnORFHMqmdUVXCF` — no test key. The RC test key caused Error 23 because the RC Test Store has no products configured. Never reintroduce a test key.
 
 **Flow**:
-1. User completes onboarding (5 steps)
-2. `subscriptionManager.startTrial()` records trial start date
-3. `PaywallView` shown as fullScreenCover (dismissible — user can start free trial)
+1. User completes 5-step onboarding
+2. `TrialOfferView` appears as fullScreenCover
+3. User taps "Start Free Trial" → `subscriptionManager.startTrial()` → `hasSeenWalkthrough = true` → enters app
 4. During trial: full access, Settings shows trial expiry
 5. Trial expired + no subscription: `ContentView` shows `PaywallView(isDismissible: false)` blocking all content
 6. Subscribed: full access, Settings shows "Manage Subscription" (opens RevenueCat CustomerCenter)
@@ -126,9 +141,12 @@ Also includes predefined common materials for quick-add.
 2. Onboarding complete AND `canAccessApp` → `TabView`
 3. Onboarding complete AND NOT `canAccessApp` → `PaywallView(isDismissible: false)`
 
-**Backward compatibility**: Existing users who update get `startTrial()` called in `ContentView.onAppear` → fresh 14-day trial from update date.
+**PaywallView behaviour**:
+- `isDismissible: true` (from TrialOfferView "See Pricing") — shows custom X close button in top-right corner so user can go back to start free trial
+- `isDismissible: false` (expired trial) — no close button, user must subscribe
+- `#if DEBUG && !QA_BUILD` — shows `DebugPaywallView` instead of RC paywall (RC paywall fails in simulator because StoreKit can't fetch sandbox products without a real device + sandbox Apple ID)
 
-**Debug**: `DebugConsoleView` has full RevenueCat section — RC user ID, entitlement status, debug overrides (Subscribed/Trial/Expired/Clear), refresh customer info, reset trial date.
+**Debug**: `DebugConsoleView` has full subscription section — RC user ID, entitlement status, debug overrides (Subscribed Yearly/Lifetime/Trial 30d/7d/1d/Expired/Revoked/Clear), trial controls (start/set expiry/reset), refresh RC customer info.
 
 ## Data Models
 
@@ -232,6 +250,7 @@ Usage: `.tint(.orangeBase)`, `.foregroundStyle(.redBold)` — Color extensions a
 - Local trial uses UserDefaults key `subscriptionTrialStartDate` — not `@AppStorage` (needs Date, not Bool)
 - PaywallView uses `RevenueCatUI.PaywallView` — paywall template is configured in the RevenueCat dashboard
 - Debug overrides (`debugOverride: SubscriptionStatus?`) allow QA testing without real purchases
+- `#if DEBUG && !QA_BUILD` shows `DebugPaywallView` — never shows the real RC paywall in Xcode debug builds
 
 ### Lottie Animations
 - All animation JSON files go in `Costivo/Animations/`
@@ -270,16 +289,16 @@ Costivo/
 │   ├── LocalizationService.swift
 │   ├── SeedData.swift
 │   ├── ShakeDetector.swift
-│   └── SubscriptionManager.swift (RevenueCat integration)
+│   └── SubscriptionManager.swift (RevenueCat integration — only file that imports RevenueCat)
 ├── Views/
 │   ├── AddJobView.swift
 │   ├── AddLaborRateView.swift
 │   ├── AddMaterialView.swift
-│   ├── AnimationView.swift (Lottie wrapper)
+│   ├── AnimationView.swift (Lottie wrapper — only file that imports Lottie)
 │   ├── AppColor.swift (Color palette)
 │   ├── BusinessProfileView.swift (Dual-mode: onboarding + settings, contains ProfileAvatar)
 │   ├── CurrencyPickerView.swift (Dual-mode: onboarding + settings)
-│   ├── DebugConsoleView.swift (Shake to open, full reset support)
+│   ├── DebugConsoleView.swift (Shake to open, full subscription + onboarding + data reset)
 │   ├── EditLaborRateView.swift
 │   ├── EditMaterialView.swift
 │   ├── FeatureWalkthroughView.swift (4-page animated feature demo)
@@ -289,13 +308,14 @@ Costivo/
 │   ├── LaborRatesView.swift
 │   ├── MaterialPickerView.swift
 │   ├── MaterialsView.swift
-│   ├── OnboardingView.swift (5-step onboarding flow)
-│   ├── PaywallView.swift (RevenueCat paywall wrapper)
+│   ├── OnboardingView.swift (5-step onboarding + TrialOfferView trigger)
+│   ├── PaywallView.swift (RC paywall wrapper + DebugPaywallView for #if DEBUG && !QA_BUILD)
 │   ├── PredefinedMaterialsView.swift
 │   ├── ProfessionPickerView.swift (Dual-mode: onboarding + settings)
 │   ├── SettingsView.swift
 │   ├── ShareSheet.swift
 │   ├── Theme.swift (.appBackground() modifier)
+│   ├── TrialOfferView.swift (Post-onboarding trial offer screen)
 │   └── TutorialView.swift (Auto-playing onboarding movie)
 ├── ContentView.swift (3-way gate: Onboarding → Subscription → TabView)
 └── CostivoApp.swift (Entry point with SwiftData + RevenueCat setup)
@@ -326,15 +346,22 @@ Costivo/
 
 ### Debug Console & Build Schemes
 The app has two schemes:
-- **Costivo** — standard scheme (`Debug` / `Release` configurations)
-- **Costivo Dev** — QA scheme (`Dev` configuration, has `QA_BUILD` compiler flag)
+- **Costivo** — standard scheme (`Debug` / `Release` configurations), app name "Costivo"
+- **Costivo Dev** — QA scheme (`Dev` configuration, has `QA_BUILD` compiler flag), app name "Costivo Dev", bundle ID `com.ciconia.Costivo.dev`
+
+The Dev configuration has both `DEBUG` and `QA_BUILD` in `SWIFT_ACTIVE_COMPILATION_CONDITIONS`.
 
 The debug console is triggered by a shake gesture, gated by `#if DEBUG || QA_BUILD`. This ensures it works:
 - When running from Xcode (any scheme, via `DEBUG`)
 - In TestFlight Dev builds (via `QA_BUILD` baked into the binary)
 - Never in production Release builds
 
-The debug console supports: viewing app info, database stats, populating test data, clearing all data, full reset (UserDefaults + SwiftData), and subscription debugging (RC user ID, entitlement status, debug overrides, trial reset).
+Use `#if DEBUG && !QA_BUILD` for behavior that should only apply in Xcode debug runs (e.g. `DebugPaywallView`) — NOT in TestFlight QA builds.
+
+The debug console supports: viewing app info, RC user ID, entitlement status, debug overrides for all subscription states, trial controls (start/set expiry/reset), onboarding step reset, database stats, populate test data, clear all data, full reset (UserDefaults + SwiftData).
+
+### RC Paywall Error 23 in Simulator
+RevenueCat Error 23 (`CONFIGURATION_ERROR`) occurs in the Xcode simulator because StoreKit can't fetch real App Store products without a physical device + sandbox Apple ID. This is expected and handled by `DebugPaywallView` (`#if DEBUG && !QA_BUILD`). For real paywall testing: use a physical device with a sandbox tester account (App Store Connect → Users and Access → Sandbox Testers).
 
 ### Lottie UIViewRepresentable Steals Touches
 Lottie's SwiftUI wrapper uses a UIKit view that intercepts touch events. `allowsHitTesting(false)` on the SwiftUI level may not work on the animation itself. Solution: put interactive elements (buttons) in a separate overlay ZStack layer on top of the animation content, or apply `.allowsHitTesting(false)` to the entire content VStack and overlay the button separately.
@@ -398,6 +425,4 @@ These rules are mandatory. The agent must follow them when writing or modifying 
 - Do not import `RevenueCat` outside of `SubscriptionManager.swift` — keep RC types isolated
 - Do not store subscription state in SwiftData — it comes from RevenueCat + UserDefaults
 - Do not duplicate views — use the dual-mode pattern (optional `onComplete` closure) when a view is needed in both onboarding and settings
-
-## Contact
-User: MR
+- Do not reintroduce a RevenueCat test API key — always use the live key; the RC test store has no products configured and causes Error 23
