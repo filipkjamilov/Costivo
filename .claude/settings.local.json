@@ -1,7 +1,19 @@
 {
   "permissions": {
     "allow": [
-      "Skill(update-config)"
+      "Skill(update-config)",
+      "mcp__revenuecat__list-offerings",
+      "mcp__revenuecat__get-products-from-entitlement",
+      "mcp__revenuecat__list-packages",
+      "mcp__revenuecat__delete-package-from-offering",
+      "mcp__revenuecat__detach-products-from-entitlement",
+      "mcp__revenuecat__archive-product",
+      "mcp__revenuecat__list-apps",
+      "mcp__revenuecat__list-app-public-api-keys",
+      "mcp__revenuecat__create-app",
+      "mcp__revenuecat__create-product",
+      "mcp__revenuecat__attach-products-to-entitlement",
+      "mcp__revenuecat__attach-products-to-package"
     ]
   }
 }

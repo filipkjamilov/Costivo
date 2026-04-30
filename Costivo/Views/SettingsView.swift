@@ -1,14 +1,18 @@
 import SwiftUI
 import SwiftData
 import UIKit
+import RevenueCatUI
 
 struct SettingsView: View {
     @Query private var settings: [AppSettings]
     @Query(sort: \LaborRate.name) private var laborRates: [LaborRate]
+    @Environment(SubscriptionManager.self) private var subscriptionManager
 
     @State private var showingProfile = false
     @State private var showingCurrencyPicker = false
     @State private var showingProfessionPicker = false
+    @State private var showingPaywall = false
+    @State private var showingCustomerCenter = false
 
     private var feedbackURL: URL? {
         var components = URLComponents(string: "https://docs.google.com/forms/d/e/1FAIpQLSeTvtrxQ3edPIvtVue15qLHlu14DGkBkw2gCr-0iLdhBVAq1w/viewform")
@@ -104,6 +108,44 @@ struct SettingsView: View {
                 }
 
                 Section {
+                    HStack {
+                        Text(L(.subscription))
+                        Spacer()
+                        Text(subscriptionManager.effectiveStatus.displayName)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    if case .trial(let expiresAt) = subscriptionManager.effectiveStatus {
+                        HStack {
+                            Text(L(.trialExpiresOn))
+                            Spacer()
+                            Text(expiresAt, style: .date)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+
+                    if case .subscribed = subscriptionManager.effectiveStatus {
+                        Button {
+                            showingCustomerCenter = true
+                        } label: {
+                            Text(L(.manageSubscription))
+                        }
+                    }
+
+                    if case .expired = subscriptionManager.effectiveStatus {
+                        Button {
+                            showingPaywall = true
+                        } label: {
+                            Text(L(.subscribe))
+                                .fontWeight(.semibold)
+                                .foregroundStyle(Color.yellowBase)
+                        }
+                    }
+                } header: {
+                    Text(L(.subscriptionSection))
+                }
+
+                Section {
                     Button {
                         if let url = feedbackURL {
                             UIApplication.shared.open(url)
@@ -129,6 +171,12 @@ struct SettingsView: View {
             .sheet(isPresented: $showingProfessionPicker) {
                 ProfessionPickerView(current: settings.handymanType)
             }
+            .sheet(isPresented: $showingPaywall) {
+                PaywallView(isDismissible: true)
+            }
+            .sheet(isPresented: $showingCustomerCenter) {
+                CustomerCenterView()
+            }
         }
     }
 }
@@ -136,4 +184,5 @@ struct SettingsView: View {
 #Preview {
     SettingsView()
         .modelContainer(for: AppSettings.self)
+        .environment(SubscriptionManager())
 }

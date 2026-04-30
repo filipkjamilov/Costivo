@@ -6,40 +6,38 @@ struct OnboardingView: View {
     @AppStorage("hasPickedProfession") private var hasPickedProfession = false
     @AppStorage("hasPickedCurrency") private var hasPickedCurrency = false
     @AppStorage("hasSeenWalkthrough") private var hasSeenWalkthrough = false
+    @State private var showTrialOffer = false
 
     var onComplete: () -> Void
 
     var body: some View {
-        if !hasSeenTutorial {
-            TutorialView {
-                withAnimation {
-                    hasSeenTutorial = true
+        Group {
+            if !hasSeenTutorial {
+                TutorialView {
+                    withAnimation { hasSeenTutorial = true }
+                }
+            } else if !hasSetProfile {
+                BusinessProfileView {
+                    withAnimation { hasSetProfile = true }
+                }
+            } else if !hasPickedProfession {
+                ProfessionPickerView {
+                    withAnimation { hasPickedProfession = true }
+                }
+            } else if !hasPickedCurrency {
+                CurrencyPickerView {
+                    withAnimation { hasPickedCurrency = true }
+                }
+            } else if !hasSeenWalkthrough {
+                FeatureWalkthroughView {
+                    withAnimation { showTrialOffer = true }
                 }
             }
-        } else if !hasSetProfile {
-            BusinessProfileView {
-                withAnimation {
-                    hasSetProfile = true
-                }
-            }
-        } else if !hasPickedProfession {
-            ProfessionPickerView {
-                withAnimation {
-                    hasPickedProfession = true
-                }
-            }
-        } else if !hasPickedCurrency {
-            CurrencyPickerView {
-                withAnimation {
-                    hasPickedCurrency = true
-                }
-            }
-        } else if !hasSeenWalkthrough {
-            FeatureWalkthroughView {
-                withAnimation {
-                    hasSeenWalkthrough = true
-                    onComplete()
-                }
+        }
+        .fullScreenCover(isPresented: $showTrialOffer) {
+            TrialOfferView {
+                hasSeenWalkthrough = true
+                onComplete()
             }
         }
     }

@@ -19,6 +19,7 @@ Most craftsmen use manual methods (paper, Excel, calculator, WhatsApp notes) for
 - **Framework**: SwiftUI
 - **Data Persistence**: SwiftData
 - **Animations**: Lottie (via SPM, static target only — NOT `Lottie-Dynamic`)
+- **Subscriptions**: RevenueCat SDK (via SPM — `RevenueCat` + `RevenueCatUI`)
 - **Platform**: iOS
 - **Language**: Swift
 
@@ -88,7 +89,46 @@ Also includes predefined common materials for quick-add.
 - **Currency**: Opens `CurrencyPickerView` as a sheet ($, €, RSD, MKD) — managed by `Currency` enum
 - **Profession**: Opens `ProfessionPickerView` as a sheet
 - **Labor Rates**: NavigationLink pushes to `LaborRatesView` with count badge and full CRUD (hourly, fixed, per unit)
+- **Subscription**: Shows status (Active/Trial/Expired), trial expiry date, manage subscription (CustomerCenter), or subscribe button
 - **Feedback**: Link to feedback form
+
+### Subscription System
+**Model**: Free download → 14-day local trial → Paid subscription (annual $29.99/year or lifetime $99.99)
+
+**Products** (App Store Connect + RevenueCat):
+- `costivo_pro_yearly` — Auto-Renewable Subscription, $29.99/year
+- `costivo_pro_lifetime` — Non-Consumable, $99.99 one-time
+
+**RevenueCat IDs**:
+- Project: `projc2576bb8`
+- App Store app: `appfc7f73fe8e` (bundle: `com.ciconia.Costivo`)
+- Entitlement: `"Costivo Pro"` (`entl6dfd2738d4`)
+- Offering: `default` (`ofrng5021cc0e01`) — packages `$rc_annual` + `$rc_lifetime`
+- Live SDK key: `appl_VvvheQvFCULLTnORFHMqmdUVXCF` (in `SubscriptionManager.apiKey`)
+
+**Architecture**:
+- **RevenueCat SDK** handles all purchase logic, receipt validation, and entitlement management
+- **`SubscriptionManager`** (`@Observable @MainActor`) — central service injected via `.environment()` from `CostivoApp`
+- **Entitlement ID**: `"Costivo Pro"` — checked via `Purchases.shared.customerInfo()`
+- **Local trial**: 14-day trial tracked via UserDefaults (`subscriptionTrialStartDate`), independent of StoreKit
+- **No SwiftData changes** — subscription state comes from RevenueCat + UserDefaults only
+
+**Flow**:
+1. User completes onboarding (5 steps)
+2. `subscriptionManager.startTrial()` records trial start date
+3. `PaywallView` shown as fullScreenCover (dismissible — user can start free trial)
+4. During trial: full access, Settings shows trial expiry
+5. Trial expired + no subscription: `ContentView` shows `PaywallView(isDismissible: false)` blocking all content
+6. Subscribed: full access, Settings shows "Manage Subscription" (opens RevenueCat CustomerCenter)
+
+**Content gating in `ContentView`** — 3-way gate:
+1. Onboarding not complete → `OnboardingView`
+2. Onboarding complete AND `canAccessApp` → `TabView`
+3. Onboarding complete AND NOT `canAccessApp` → `PaywallView(isDismissible: false)`
+
+**Backward compatibility**: Existing users who update get `startTrial()` called in `ContentView.onAppear` → fresh 14-day trial from update date.
+
+**Debug**: `DebugConsoleView` has full RevenueCat section — RC user ID, entitlement status, debug overrides (Subscribed/Trial/Expired/Clear), refresh customer info, reset trial date.
 
 ## Data Models
 
@@ -121,6 +161,14 @@ Also includes predefined common materials for quick-add.
 - handymanName: String? (craftsman's display name)
 - businessName: String? (optional company name)
 - Access via `[AppSettings]` extension: `settings.currency` returns `Currency`, `settings.handymanType` returns `HandymanType`, `settings.handymanName` / `settings.businessName` return `String`
+
+### SubscriptionStatus (enum, not SwiftData)
+- `notDetermined` — app just launched, checking status (allows access to prevent paywall flash)
+- `trial(expiresAt: Date)` — in free trial period
+- `subscribed(expiresAt: Date, willRenew: Bool)` — active subscription
+- `expired` — trial or subscription expired
+- `revoked` — subscription revoked by Apple
+- Computed: `canAccessApp` (true for notDetermined/trial/subscribed), `displayName` (localized)
 
 ### Enums (separate files)
 - `Currency`: usd ($), eur (€), rsd (RSD), mkd (MKD) — has `.symbol`, `.label`, `.default`
@@ -166,7 +214,7 @@ Usage: `.tint(.orangeBase)`, `.foregroundStyle(.redBold)` — Color extensions a
 
 **Naming convention:** soft (lightest bg) → light → muted → base (primary) → bold → deep (darkest).
 
-**Dark/Light mode gradient** is handled by `AppColor.gradientTop/Mid/Bottom(for:)` — dark mode uses greyBase→greyDark→greyDeep, light mode uses yellowLight→yellowMuted→greySoft.
+**Dark/Light mode gradient** is handled by `AppColor.gradientTop/Mid/Bottom(for:)` — dark mode uses greyBase(`#3D3010`)→greyDark(`#1E1B14`)→greyDeep(`#111111`) which are warm brown tones (not neutral grey), light mode uses yellowLight(`#F2D8A0`)→yellowMuted(`#F0E4CC`)→greySoft(`#F2F2F7`).
 
 **Rules:**
 - Use `Color` extensions for SwiftUI modifiers: `.tint(.blueBold)`, `.foregroundStyle(.greenBase)`
@@ -174,6 +222,16 @@ Usage: `.tint(.orangeBase)`, `.foregroundStyle(.redBold)` — Color extensions a
 - System semantic colors (`.primary`, `.secondary`) are OK for text — they adapt to dark mode natively
 - `Color.accentColor` is OK for interactive elements that should follow the app's accent color
 - `Color.clear` and `Color(.secondarySystemGroupedBackground)` are OK for system-level transparency and backgrounds
+
+### RevenueCat / Subscriptions
+- Only import `RevenueCat` in `SubscriptionManager.swift` — keep RC types out of all other files
+- Only import `RevenueCatUI` in `PaywallView.swift` and `SettingsView.swift` (for `CustomerCenterView`)
+- Subscription state is NOT stored in SwiftData — it comes from RevenueCat + UserDefaults
+- `SubscriptionManager` is `@Observable` (not `ObservableObject`) — injected via `.environment()` from `CostivoApp`
+- Entitlement ID is `"Costivo Pro"` — defined in `SubscriptionManager.entitlementID`
+- Local trial uses UserDefaults key `subscriptionTrialStartDate` — not `@AppStorage` (needs Date, not Bool)
+- PaywallView uses `RevenueCatUI.PaywallView` — paywall template is configured in the RevenueCat dashboard
+- Debug overrides (`debugOverride: SubscriptionStatus?`) allow QA testing without real purchases
 
 ### Lottie Animations
 - All animation JSON files go in `Costivo/Animations/`
@@ -205,12 +263,14 @@ Costivo/
 │   ├── Material.swift
 │   ├── PredefinedMaterial.swift
 │   ├── PricingModel.swift
+│   ├── SubscriptionStatus.swift
 │   └── UnitType.swift
 ├── Services/
 │   ├── JobShareService.swift
 │   ├── LocalizationService.swift
 │   ├── SeedData.swift
-│   └── ShakeDetector.swift
+│   ├── ShakeDetector.swift
+│   └── SubscriptionManager.swift (RevenueCat integration)
 ├── Views/
 │   ├── AddJobView.swift
 │   ├── AddLaborRateView.swift
@@ -229,15 +289,16 @@ Costivo/
 │   ├── LaborRatesView.swift
 │   ├── MaterialPickerView.swift
 │   ├── MaterialsView.swift
-│   ├── OnboardingView.swift (4-step onboarding flow)
+│   ├── OnboardingView.swift (5-step onboarding flow)
+│   ├── PaywallView.swift (RevenueCat paywall wrapper)
 │   ├── PredefinedMaterialsView.swift
 │   ├── ProfessionPickerView.swift (Dual-mode: onboarding + settings)
 │   ├── SettingsView.swift
 │   ├── ShareSheet.swift
 │   ├── Theme.swift (.appBackground() modifier)
 │   └── TutorialView.swift (Auto-playing onboarding movie)
-├── ContentView.swift (Delegates to OnboardingView or TabView)
-└── CostivoApp.swift (Entry point with SwiftData setup)
+├── ContentView.swift (3-way gate: Onboarding → Subscription → TabView)
+└── CostivoApp.swift (Entry point with SwiftData + RevenueCat setup)
 ```
 
 ## Known Issues & Solutions
@@ -273,7 +334,7 @@ The debug console is triggered by a shake gesture, gated by `#if DEBUG || QA_BUI
 - In TestFlight Dev builds (via `QA_BUILD` baked into the binary)
 - Never in production Release builds
 
-The debug console supports: viewing app info, database stats, populating test data, clearing all data, and full reset (UserDefaults + SwiftData).
+The debug console supports: viewing app info, database stats, populating test data, clearing all data, full reset (UserDefaults + SwiftData), and subscription debugging (RC user ID, entitlement status, debug overrides, trial reset).
 
 ### Lottie UIViewRepresentable Steals Touches
 Lottie's SwiftUI wrapper uses a UIKit view that intercepts touch events. `allowsHitTesting(false)` on the SwiftUI level may not work on the animation itself. Solution: put interactive elements (buttons) in a separate overlay ZStack layer on top of the animation content, or apply `.allowsHitTesting(false)` to the entire content VStack and overlay the button separately.
@@ -334,6 +395,8 @@ These rules are mandatory. The agent must follow them when writing or modifying 
 - Do not change the SwiftData schema (add/remove/rename stored properties) without warning the user about migration risk
 - Do not use `async/await` for SwiftData operations — SwiftData on main actor is synchronous
 - Do not import Lottie outside of `AnimationView.swift`
+- Do not import `RevenueCat` outside of `SubscriptionManager.swift` — keep RC types isolated
+- Do not store subscription state in SwiftData — it comes from RevenueCat + UserDefaults
 - Do not duplicate views — use the dual-mode pattern (optional `onComplete` closure) when a view is needed in both onboarding and settings
 
 ## Contact

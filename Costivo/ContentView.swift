@@ -10,15 +10,21 @@ import SwiftData
 
 struct ContentView: View {
     @Query private var settings: [AppSettings]
+    @Environment(SubscriptionManager.self) private var subscriptionManager
     @State private var showDebugConsole = false
+    @State private var showPaywall = false
     @State private var onboardingComplete = false
     @AppStorage("hasSeenWalkthrough") private var hasSeenWalkthrough = false
     @AppStorage("hasPickedCurrency") private var hasPickedCurrency = false
     @AppStorage("walkthroughMigrationDone") private var walkthroughMigrationDone = false
 
+    private var onboardingDone: Bool {
+        hasSeenWalkthrough || onboardingComplete
+    }
+
     var body: some View {
         Group {
-            if hasSeenWalkthrough || onboardingComplete {
+            if onboardingDone && subscriptionManager.canAccessApp {
                 TabView {
                     JobsView()
                         .tabItem {
@@ -35,6 +41,9 @@ struct ContentView: View {
                             Label(L(.settings), systemImage: settings.handymanType.settingsIcon)
                         }
                 }
+            } else if onboardingDone {
+                // Trial expired or not subscribed — block with paywall
+                PaywallView(isDismissible: false)
             } else {
                 OnboardingView {
                     onboardingComplete = true
@@ -58,6 +67,11 @@ struct ContentView: View {
                     hasSeenWalkthrough = true
                 }
             }
+
+            // Existing users get a fresh 14-day trial from the update date
+            if hasSeenWalkthrough {
+                subscriptionManager.startTrial()
+            }
         }
     }
 }
@@ -71,6 +85,7 @@ struct ContentView: View {
     
     return ContentView()
         .modelContainer(container)
+        .environment(SubscriptionManager())
         .environment(\.locale, Locale(identifier: "en"))
 }
 
@@ -80,9 +95,10 @@ struct ContentView: View {
         for: Material.self, LaborRate.self, Job.self, JobMaterial.self, JobLabor.self, AppSettings.self,
         configurations: config
     )
-    
+
     return ContentView()
         .modelContainer(container)
+        .environment(SubscriptionManager())
         .environment(\.locale, Locale(identifier: "mk"))
 }
 

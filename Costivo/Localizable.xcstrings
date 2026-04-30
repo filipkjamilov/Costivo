@@ -223,9 +223,6 @@
         }
       }
     },
-    "App Info" : {
-
-    },
     "Apr 15, 2026" : {
 
     },
@@ -318,6 +315,9 @@
       }
     },
     "Clear All Data" : {
+
+    },
+    "Clear Override" : {
 
     },
     "client" : {
@@ -507,10 +507,7 @@
         }
       }
     },
-    "Data Tools" : {
-
-    },
-    "Database" : {
+    "Data" : {
 
     },
     "date" : {
@@ -638,6 +635,9 @@
         }
       }
     },
+    "Expired" : {
+
+    },
     "filterAll" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -723,7 +723,7 @@
         }
       }
     },
-    "Full Reset (UserDefaults + SwiftData)" : {
+    "Full Reset (UserDefaults + Data)" : {
 
     },
     "generatedByCostivo" : {
@@ -943,6 +943,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Управувајте со цените за работна рака за проценките"
+          }
+        }
+      }
+    },
+    "manageSubscription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Manage Subscription"
+          }
+        },
+        "mk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Управувај претплата"
           }
         }
       }
@@ -1259,6 +1276,9 @@
         }
       }
     },
+    "Onboarding" : {
+
+    },
     "overdue" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1276,6 +1296,9 @@
         }
       }
     },
+    "Overrides are in-memory only. App restart clears them." : {
+
+    },
     "painter" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1292,6 +1315,43 @@
           }
         }
       }
+    },
+    "paywallSubtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start your 14-day free trial, then $29.99/year"
+          }
+        },
+        "mk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Започни 14-дневен бесплатен период, потоа $29.99/годишно"
+          }
+        }
+      }
+    },
+    "paywallTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unlock Costivo"
+          }
+        },
+        "mk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отклучи Costivo"
+          }
+        }
+      }
+    },
+    "Pending" : {
+
     },
     "piece" : {
       "comment" : "Key for the localized string that describes a unit of measurement for a single item.",
@@ -1521,6 +1581,21 @@
         }
       }
     },
+    "Refresh Customer Info" : {
+
+    },
+    "Reset All Onboarding" : {
+
+    },
+    "Reset trial completely" : {
+
+    },
+    "RevenueCat" : {
+
+    },
+    "Revoked" : {
+
+    },
     "save" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1640,6 +1715,15 @@
         }
       }
     },
+    "Set trial as expired (30 days ago)" : {
+
+    },
+    "Set trial to expire in 1 day" : {
+
+    },
+    "Set trial to expire in 7 days" : {
+
+    },
     "settings" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1691,6 +1775,26 @@
         }
       }
     },
+    "Start fresh 30-day trial (from now)" : {
+
+    },
+    "startFreeTrial" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start Free Trial"
+          }
+        },
+        "mk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Започни бесплатен период"
+          }
+        }
+      }
+    },
     "status" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1707,6 +1811,12 @@
           }
         }
       }
+    },
+    "Status" : {
+
+    },
+    "Status Overrides" : {
+
     },
     "statusArchived" : {
       "extractionState" : "manual",
@@ -1776,6 +1886,111 @@
         }
       }
     },
+    "subscribe" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subscribe"
+          }
+        },
+        "mk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Претплати се"
+          }
+        }
+      }
+    },
+    "subscription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subscription"
+          }
+        },
+        "mk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Претплата"
+          }
+        }
+      }
+    },
+    "Subscription Status" : {
+
+    },
+    "subscriptionActive" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Active"
+          }
+        },
+        "mk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Активна"
+          }
+        }
+      }
+    },
+    "subscriptionExpired" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Expired"
+          }
+        },
+        "mk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Истечена"
+          }
+        }
+      }
+    },
+    "subscriptionSection" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subscription"
+          }
+        },
+        "mk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Претплата"
+          }
+        }
+      }
+    },
+    "subscriptionTrial" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Free Trial"
+          }
+        },
+        "mk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пробен период"
+          }
+        }
+      }
+    },
     "support" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1792,6 +2007,9 @@
           }
         }
       }
+    },
+    "Tap a completed step to reset it. Restart the app to re-run from that step." : {
+
     },
     "tiler" : {
       "extractionState" : "manual",
@@ -1874,6 +2092,162 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ВКУПНО:"
+          }
+        }
+      }
+    },
+    "Trial Controls" : {
+
+    },
+    "trialExpiresOn" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trial expires"
+          }
+        },
+        "mk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пробниот период истекува"
+          }
+        }
+      }
+    },
+    "trialOfferDisclaimer" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No payment required. Cancel anytime."
+          }
+        },
+        "mk" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Не е потребна картичка. Откажи кога сакаш."
+          }
+        }
+      }
+    },
+    "trialOfferFeature1" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create unlimited professional quotes"
+          }
+        },
+        "mk" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Неограничени професионални понуди"
+          }
+        }
+      }
+    },
+    "trialOfferFeature2" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Build your materials & labor library"
+          }
+        },
+        "mk" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Изгради библиотека на материјали и труд"
+          }
+        }
+      }
+    },
+    "trialOfferFeature3" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Track jobs, deadlines and history"
+          }
+        },
+        "mk" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Следи работи, рокови и историја"
+          }
+        }
+      }
+    },
+    "trialOfferFeature4" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Export and share quotes with clients"
+          }
+        },
+        "mk" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Испрати понуди до клиенти"
+          }
+        }
+      }
+    },
+    "trialOfferSeePricing" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "See pricing"
+          }
+        },
+        "mk" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Погледни цени"
+          }
+        }
+      }
+    },
+    "trialOfferSubtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30 days free, no card required"
+          }
+        },
+        "mk" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "30 дена бесплатно, без картичка"
+          }
+        }
+      }
+    },
+    "trialOfferTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try Costivo Pro Free"
+          }
+        },
+        "mk" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Пробај Costivo Pro бесплатно"
           }
         }
       }
